@@ -18,8 +18,10 @@ import {
   TrendingUp,
   Sliders,
   DollarSign,
-  Shield
+  Shield,
+  Fingerprint
 } from 'lucide-react';
+import BiometricScannerModal from '@/components/attendance/BiometricScannerModal';
 
 export default function StaffPortalHomePage() {
   const { user, logAction } = useAuth();
@@ -33,6 +35,7 @@ export default function StaffPortalHomePage() {
   // Attendance Clocking states
   const [todayRecord, setTodayRecord] = useState<AttendanceRecord | null>(null);
   const [currentTime, setCurrentTime] = useState<Date | null>(null);
+  const [isBioModalOpen, setIsBioModalOpen] = useState(false);
 
   useEffect(() => {
     setCurrentTime(new Date());
@@ -198,19 +201,37 @@ export default function StaffPortalHomePage() {
 
             <div className="flex items-center gap-3 w-full sm:w-auto">
               {!todayRecord ? (
-                <button
-                  onClick={handleClockIn}
-                  className="flex-1 sm:flex-none py-2 px-6 rounded-xl bg-gradient-to-r from-indigo-500 to-blue-500 hover:from-indigo-600 hover:to-blue-600 text-white text-xs font-extrabold tracking-wider shadow-md shadow-indigo-500/10 active:scale-95 transition-all cursor-pointer"
-                >
-                  CLOCK IN
-                </button>
+                <>
+                  <button
+                    onClick={handleClockIn}
+                    className="flex-1 sm:flex-none py-2 px-6 rounded-xl bg-gradient-to-r from-indigo-500 to-blue-500 hover:from-indigo-600 hover:to-blue-600 text-white text-xs font-extrabold tracking-wider shadow-md shadow-indigo-500/10 active:scale-95 transition-all cursor-pointer"
+                  >
+                    CLOCK IN
+                  </button>
+                  <button
+                    onClick={() => setIsBioModalOpen(true)}
+                    className="p-2 rounded-xl border border-slate-200 hover:border-indigo-300 hover:bg-indigo-50 text-indigo-600 shadow-sm cursor-pointer transition-all flex items-center justify-center shrink-0"
+                    title="Clock In with Fingerprint"
+                  >
+                    <Fingerprint className="h-4.5 w-4.5" />
+                  </button>
+                </>
               ) : !todayRecord.clockOut ? (
-                <button
-                  onClick={handleClockOut}
-                  className="flex-1 sm:flex-none py-2 px-6 rounded-xl bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white text-xs font-extrabold tracking-wider shadow-md shadow-rose-500/10 active:scale-95 transition-all cursor-pointer"
-                >
-                  CLOCK OUT
-                </button>
+                <>
+                  <button
+                    onClick={handleClockOut}
+                    className="flex-1 sm:flex-none py-2 px-6 rounded-xl bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white text-xs font-extrabold tracking-wider shadow-md shadow-rose-500/10 active:scale-95 transition-all cursor-pointer"
+                  >
+                    CLOCK OUT
+                  </button>
+                  <button
+                    onClick={() => setIsBioModalOpen(true)}
+                    className="p-2 rounded-xl border border-slate-200 hover:border-rose-300 hover:bg-rose-50 text-rose-500 shadow-sm cursor-pointer transition-all flex items-center justify-center shrink-0"
+                    title="Clock Out with Fingerprint"
+                  >
+                    <Fingerprint className="h-4.5 w-4.5" />
+                  </button>
+                </>
               ) : (
                 <button
                   disabled
@@ -407,6 +428,14 @@ export default function StaffPortalHomePage() {
         </div>
 
       </div>
+
+      <BiometricScannerModal
+        isOpen={isBioModalOpen}
+        onClose={() => setIsBioModalOpen(false)}
+        onSuccess={!todayRecord ? handleClockIn : handleClockOut}
+        employeeName={`${profile.firstName} ${profile.lastName}`}
+        actionType={!todayRecord ? 'IN' : 'OUT'}
+      />
 
     </div>
   );

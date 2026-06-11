@@ -16,9 +16,11 @@ import {
   Filter,
   CheckCircle2,
   XCircle,
-  HelpCircle
+  HelpCircle,
+  Fingerprint
 } from 'lucide-react';
 import Link from 'next/link';
+import BiometricScannerModal from '@/components/attendance/BiometricScannerModal';
 
 export default function MyAttendancePage() {
   const { user, logAction } = useAuth();
@@ -31,7 +33,8 @@ export default function MyAttendancePage() {
   const [startDate, setStartDate] = useState<string>('');
   const [endDate, setEndDate] = useState<string>('');
   
-  // Timer state
+  // Biometrics & Timer states
+  const [isBioModalOpen, setIsBioModalOpen] = useState(false);
   const [currentTime, setCurrentTime] = useState<Date | null>(null);
 
   useEffect(() => {
@@ -171,21 +174,39 @@ export default function MyAttendancePage() {
           </div>
 
           {/* Clock actions */}
-          <div className="w-full">
+          <div className="w-full space-y-2.5">
             {!todayRecord ? (
-              <button
-                onClick={handleClockIn}
-                className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-tr from-indigo-500 to-blue-500 hover:from-indigo-600 hover:to-blue-600 text-white text-xs font-black tracking-wider shadow-md shadow-indigo-500/10 active:scale-98 transition-all cursor-pointer"
-              >
-                CLOCK IN
-              </button>
+              <div className="flex gap-2">
+                <button
+                  onClick={handleClockIn}
+                  className="flex-1 py-2.5 px-4 rounded-xl bg-gradient-to-tr from-indigo-500 to-blue-500 hover:from-indigo-600 hover:to-blue-600 text-white text-xs font-black tracking-wider shadow-md shadow-indigo-500/10 active:scale-98 transition-all cursor-pointer"
+                >
+                  CLOCK IN
+                </button>
+                <button
+                  onClick={() => setIsBioModalOpen(true)}
+                  className="p-2.5 rounded-xl border border-slate-200 hover:border-indigo-300 hover:bg-indigo-50 text-indigo-600 cursor-pointer flex items-center justify-center shrink-0 transition-all"
+                  title="Biometric Clock In"
+                >
+                  <Fingerprint className="h-5 w-5" />
+                </button>
+              </div>
             ) : !todayRecord.clockOut ? (
-              <button
-                onClick={handleClockOut}
-                className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-tr from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white text-xs font-black tracking-wider shadow-md shadow-rose-500/10 active:scale-98 transition-all cursor-pointer"
-              >
-                CLOCK OUT
-              </button>
+              <div className="flex gap-2">
+                <button
+                  onClick={handleClockOut}
+                  className="flex-1 py-2.5 px-4 rounded-xl bg-gradient-to-tr from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white text-xs font-black tracking-wider shadow-md shadow-rose-500/10 active:scale-98 transition-all cursor-pointer"
+                >
+                  CLOCK OUT
+                </button>
+                <button
+                  onClick={() => setIsBioModalOpen(true)}
+                  className="p-2.5 rounded-xl border border-slate-200 hover:border-rose-300 hover:bg-rose-50 text-rose-500 cursor-pointer flex items-center justify-center shrink-0 transition-all"
+                  title="Biometric Clock Out"
+                >
+                  <Fingerprint className="h-5 w-5" />
+                </button>
+              </div>
             ) : (
               <button
                 disabled
@@ -383,6 +404,16 @@ export default function MyAttendancePage() {
         </div>
 
       </div>
+
+      {profile && (
+        <BiometricScannerModal
+          isOpen={isBioModalOpen}
+          onClose={() => setIsBioModalOpen(false)}
+          onSuccess={!todayRecord ? handleClockIn : handleClockOut}
+          employeeName={`${profile.firstName} ${profile.lastName}`}
+          actionType={!todayRecord ? 'IN' : 'OUT'}
+        />
+      )}
     </div>
   );
 }
