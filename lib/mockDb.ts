@@ -388,6 +388,76 @@ const INITIAL_LEAVE_BALANCES: LeaveBalance[] = [
   { id: 'lb-27', employeeId: 'emp-9', leaveType: 'EMERGENCY', allocated: 5, used: 0, pending: 0 }
 ];
 
+// Helper variables for generating 800 mock users/employees
+const FIRST_NAMES = ['Juan', 'Jose', 'Maria', 'Ana', 'Pedro', 'Manuel', 'Francis', 'Mark', 'Paul', 'Ramon', 'Christina', 'Sofia', 'Dominic', 'Patricia', 'Angela', 'Gabriel', 'Michael', 'David', 'Joseph', 'Teresa'];
+const LAST_NAMES = ['Cruz', 'Santos', 'Reyes', 'Mercado', 'Alvarez', 'Rodriguez', 'De Leon', 'Garcia', 'Bautista', 'Del Rosario', 'Villanueva', 'Ramos', 'Aquino', 'Castro', 'Gonzales', 'Torres', 'Pascual', 'Soriano', 'Santiago', 'Corpuz'];
+const DEPARTMENTS = ['Engineering', 'Product & Design', 'Marketing', 'Finance', 'Human Resources', 'IT & Security'];
+const ROLES: Record<string, string[]> = {
+  'Engineering': ['Software Engineer', 'QA Engineer', 'DevOps Engineer', 'Lead Engineer', 'Frontend Developer', 'Backend Developer'],
+  'Product & Design': ['UX Designer', 'UI Designer', 'Product Manager', 'UX Researcher'],
+  'Marketing': ['Content Specialist', 'Marketing Associate', 'SEO Specialist', 'Creative Lead'],
+  'Finance': ['Accountant', 'Finance Associate', 'Payroll Analyst'],
+  'Human Resources': ['HR Generalist', 'HR Specialist', 'Recruiting Associate'],
+  'IT & Security': ['IT Support', 'Security Analyst', 'Network Administrator']
+};
+const BANKS = ['Apex Security Bank', 'Global Trust Finance', 'Pioneer Savings Bank'];
+const CITIES = ['Makati City', 'Quezon City', 'Pasig City', 'Taguig City', 'Manila City', 'Pasay City', 'Mandaluyong City'];
+
+// Generate 791 more employees to reach 800 total staff members
+for (let i = 10; i <= 800; i++) {
+  const firstName = FIRST_NAMES[i % FIRST_NAMES.length];
+  const lastName = LAST_NAMES[(i + 3) % LAST_NAMES.length];
+  const dept = DEPARTMENTS[i % DEPARTMENTS.length];
+  const titles = ROLES[dept];
+  const title = titles[i % titles.length];
+  
+  const email = `${firstName.toLowerCase()}.${lastName.toLowerCase()}.${i}@hr.com`;
+  const empId = `emp-${i}`;
+  const userId = `u-${i}`;
+  const employeeIdCode = `EMP-2026-${String(i).padStart(4, '0')}`;
+  
+  INITIAL_USERS.push({
+    id: userId,
+    email,
+    role: 'STAFF',
+    name: `${firstName} ${lastName}`
+  });
+  
+  const baseSalary = 25000 + (i % 25) * 5000; // range ₱25k to ₱145k
+  
+  INITIAL_EMPLOYEES.push({
+    id: empId,
+    userId,
+    employeeId: employeeIdCode,
+    firstName,
+    lastName,
+    middleName: 'M',
+    personalEmail: email,
+    phone: `+63 917 ${String(1000000 + i).substring(1)}`,
+    dateOfBirth: `19${80 + (i % 22)}-05-15`,
+    gender: i % 2 === 0 ? 'Female' : 'Male',
+    address: `${CITIES[i % CITIES.length]}, Metro Manila`,
+    jobTitle: title,
+    department: dept,
+    dateHired: `202${0 + (i % 6)}-03-01`,
+    employmentStatus: 'ACTIVE',
+    employmentType: 'FULL_TIME',
+    baseSalary,
+    taxIdNumber: `TIN-100-200-${String(i).padStart(3, '0')}`,
+    socialSecurityNo: `SSS-22-333444-${i % 10}`,
+    healthInsuranceNo: `PH-5555-6666-${i % 10}`,
+    housingFundNo: `PI-2222-3333-${i % 10}`,
+    bankName: BANKS[i % BANKS.length],
+    bankAccountNumber: `1000000000${i}`.substring(String(i).length)
+  });
+  
+  INITIAL_LEAVE_BALANCES.push(
+    { id: `lb-${i}-1`, employeeId: empId, leaveType: 'VACATION', allocated: 15, used: i % 5, pending: 0 },
+    { id: `lb-${i}-2`, employeeId: empId, leaveType: 'SICK', allocated: 10, used: i % 3, pending: 0 },
+    { id: `lb-${i}-3`, employeeId: empId, leaveType: 'EMERGENCY', allocated: 5, used: 0, pending: 0 }
+  );
+}
+
 const INITIAL_LEAVE_REQUESTS: LeaveRequest[] = [
   {
     id: 'lr-1',
@@ -549,6 +619,14 @@ INITIAL_PAYROLL_RUNS.forEach((run) => {
   let runNet = 0;
 
   INITIAL_EMPLOYEES.forEach((emp) => {
+    // Generate historical payslips for the main employees (headcount <= 9) for all 5 months.
+    // For other mock employees (emp-10 to emp-800), only generate a payslip for May (pr-1).
+    // This scales the current payroll, while preventing LocalStorage bloat and keeping it ultra-fast.
+    const isMainEmployee = parseInt(emp.id.replace('emp-', '')) <= 9;
+    if (run.id !== 'pr-1' && !isMainEmployee) {
+      return;
+    }
+
     const base = emp.baseSalary;
     
     // Add small random overtime to some employees to make data look real
@@ -641,7 +719,7 @@ const INITIAL_AUDIT_LOGS: AuditLog[] = [
     role: 'PAYROLL_OFFICER',
     action: 'RUN_PAYROLL',
     resource: 'PayrollRun/pr-1',
-    details: 'Approved and finalized May 2026 Monthly Payroll cycle for 9 active staff members.',
+    details: 'Approved and finalized May 2026 Monthly Payroll cycle for 800 active staff members.',
     ipAddress: '192.168.1.15',
     createdAt: '2026-05-30T17:00:00Z'
   },
@@ -724,7 +802,7 @@ class MockDBStore {
 
   constructor() {
     if (this.isBrowser) {
-      if (!localStorage.getItem('hr_system_initialized_v4')) {
+      if (!localStorage.getItem('hr_system_initialized_v5')) {
         this.set('users', INITIAL_USERS);
         this.set('employees', INITIAL_EMPLOYEES);
         this.set('leave_balances', INITIAL_LEAVE_BALANCES);
@@ -732,7 +810,7 @@ class MockDBStore {
         this.set('payroll_runs', INITIAL_PAYROLL_RUNS);
         this.set('payslips', INITIAL_PAYSLIPS);
         this.set('audit_logs', INITIAL_AUDIT_LOGS);
-        localStorage.setItem('hr_system_initialized_v4', 'true');
+        localStorage.setItem('hr_system_initialized_v5', 'true');
       }
     }
   }
