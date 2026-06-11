@@ -1485,6 +1485,32 @@ class MockDBStore {
       return todayRec;
     }
   }
+
+  exportAllData() {
+    return {
+      users: this.getUsers(),
+      employees: this.getEmployees(),
+      leave_balances: this.get('leave_balances', INITIAL_LEAVE_BALANCES),
+      leave_requests: this.get('leave_requests', INITIAL_LEAVE_REQUESTS),
+      payroll_runs: this.get('payroll_runs', INITIAL_PAYROLL_RUNS),
+      payslips: this.get('payslips', INITIAL_PAYSLIPS),
+      audit_logs: this.get('audit_logs', INITIAL_AUDIT_LOGS),
+      attendance: this.get('attendance', SEEDED_ATTENDANCE)
+    };
+  }
+
+  importAllData(data: any): boolean {
+    if (!data || typeof data !== 'object') return false;
+    if (data.users) this.set('users', data.users);
+    if (data.employees) this.set('employees', data.employees);
+    if (data.leave_balances) this.set('leave_balances', data.leave_balances);
+    if (data.leave_requests) this.set('leave_requests', data.leave_requests);
+    if (data.payroll_runs) this.set('payroll_runs', data.payroll_runs);
+    if (data.payslips) this.set('payslips', data.payslips);
+    if (data.audit_logs) this.set('audit_logs', data.audit_logs);
+    if (data.attendance) this.set('attendance', data.attendance);
+    return true;
+  }
 }
 
 export const mockDb = new MockDBStore();

@@ -16,10 +16,12 @@ import {
   Shield,
   Clock,
   ChevronLeft,
+  Database,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import TopHeader from '@/components/layout/TopHeader';
+import { mockDb } from '@/lib/mockDb';
 
 const SIDEBAR_EXPANDED = 256;
 const SIDEBAR_COLLAPSED = 72;
@@ -41,6 +43,73 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       router.replace('/login');
     }
   }, [isClient, user, router]);
+
+  // Background Backup Automation Daemon (Runs for Admin users)
+  useEffect(() => {
+    if (!isClient || !user || user.role !== 'ADMIN') return;
+
+    const runBackgroundBackup = async () => {
+      try {
+        const autoEnabled = localStorage.getItem('hr_system_backup_auto_enabled') === 'true';
+        if (!autoEnabled) return;
+
+        const freq = parseInt(localStorage.getItem('hr_system_backup_auto_interval') || '300');
+        const lastRun = parseInt(localStorage.getItem('hr_system_backup_last_run') || '0');
+        
+        // If due, run the backup
+        if (Date.now() >= lastRun + freq * 1000) {
+          console.log('[DAEMON AUTOBACKUP] Saving automated system snapshot...');
+          const dataToBackup = mockDb.exportAllData();
+          const destination = localStorage.getItem('hr_system_backup_auto_dest') || 'server';
+
+          // 1. Save on Server
+          if (destination === 'server' || destination === 'both') {
+            await fetch('/api/admin/backups', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                tables: dataToBackup,
+                isAutomated: true,
+                label: 'system'
+              })
+            });
+          }
+
+          // 2. Save in local storage
+          if (destination === 'local' || destination === 'both') {
+            const timestamp = Date.now();
+            const localFilename = `backup_${timestamp}_auto_system.json`;
+            const sizeEstimate = JSON.stringify(dataToBackup).length;
+            
+            const newLocalBackup = {
+              filename: localFilename,
+              size: sizeEstimate,
+              createdAt: new Date().toISOString(),
+              type: 'auto',
+              tables: dataToBackup
+            };
+
+            const existingLocal = localStorage.getItem('hr_system_local_backups');
+            const list = existingLocal ? JSON.parse(existingLocal) : [];
+            list.unshift(newLocalBackup);
+            localStorage.setItem('hr_system_local_backups', JSON.stringify(list));
+          }
+
+          localStorage.setItem('hr_system_backup_last_run', String(Date.now()));
+          mockDb.addAuditLog(user, 'AUTOMATED_DATABASE_BACKUP', 'Database', 'Automated database snapshot completed by background system daemon.');
+          
+          // Dispatch storage event to alert other windows/states
+          window.dispatchEvent(new Event('storage'));
+        }
+      } catch (e) {
+        console.error('[Daemon Backup Error]', e);
+      }
+    };
+
+    // Check every 10 seconds in the background
+    const interval = setInterval(runBackgroundBackup, 10000);
+    return () => clearInterval(interval);
+  }, [isClient, user]);
 
   if (!isClient || !user) {
     return (
@@ -66,6 +135,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     links.push({ name: 'PAYROLL CONFIG',icon: Settings,       path: '/payroll/settings',  group: 'PAYROLL',      roles: ['ADMIN','PAYROLL_OFFICER'] });
     links.push({ name: 'ACCOUNTS',     icon: Shield,          path: '/admin/users',        group: 'ADMIN',        roles: ['ADMIN'] });
     links.push({ name: 'AUDIT TRAIL',  icon: ShieldAlert,     path: '/admin/audit-logs',   group: 'ADMIN',        roles: ['ADMIN'] });
+    links.push({ name: 'BACKUPS',      icon: Database,        path: '/admin/backups',      group: 'ADMIN',        roles: ['ADMIN'] });
 
     return links.filter(link => link.roles.includes(role));
   };
