@@ -32,17 +32,18 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     setIsClient(true);
   }, []);
 
-  if (!isClient) {
+  useEffect(() => {
+    if (isClient && !user) {
+      router.replace('/login');
+    }
+  }, [isClient, user, router]);
+
+  if (!isClient || !user) {
     return (
       <div className="min-h-screen bg-[#f8fafc] text-slate-800 flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-indigo-600"></div>
       </div>
     );
-  }
-
-  if (!user) {
-    router.replace('/login');
-    return null;
   }
 
   // Sidebar Links config based on role
