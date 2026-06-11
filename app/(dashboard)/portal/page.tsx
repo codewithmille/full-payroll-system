@@ -407,6 +407,111 @@ export default function StaffPortalHomePage() {
           </div>
         </div>
 
+        {/* Weekly Timesheet Tracker */}
+        <div className="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm space-y-4">
+          <div className="flex items-center justify-between text-xs font-bold">
+            <span className="text-slate-800 flex items-center gap-1.5">
+              <Clock className="h-4 w-4 text-indigo-500" />
+              Weekly Timesheet
+            </span>
+            <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">June 8 - 12</span>
+          </div>
+
+          <div className="space-y-3">
+            {/* Progress bar */}
+            <div className="space-y-1">
+              <div className="flex justify-between text-[10px] font-bold text-slate-500">
+                <span>Total Work Hours</span>
+                <span className="text-indigo-600 font-extrabold">34.5 hrs / 40 hrs</span>
+              </div>
+              <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                <div className="bg-gradient-to-r from-indigo-500 to-blue-500 h-full rounded-full" style={{ width: '86%' }} />
+              </div>
+            </div>
+
+            {/* Weekly Days Tracker */}
+            <div className="grid grid-cols-5 gap-1.5 text-center">
+              {[
+                { day: 'M', hours: '8.0h', status: 'present' },
+                { day: 'T', hours: '8.5h', status: 'present' },
+                { day: 'W', hours: '8.0h', status: 'present' },
+                { day: 'T', hours: '7.5h', status: 'present' },
+                { day: 'F', hours: todayRecord ? (todayRecord.clockOut ? 'Done' : 'Active') : '0.0h', status: todayRecord ? 'active' : 'pending' }
+              ].map((d, idx) => (
+                <div key={idx} className="p-2 bg-slate-50 border border-slate-100 rounded-xl flex flex-col items-center">
+                  <span className="text-[10px] font-bold text-slate-400">{d.day}</span>
+                  <span className={`w-1.5 h-1.5 rounded-full my-1.5 ${
+                    d.status === 'present' ? 'bg-emerald-500' :
+                    d.status === 'active' ? 'bg-indigo-500 animate-pulse' :
+                    'bg-slate-350'
+                  }`} />
+                  <span className="text-[8px] font-bold text-slate-500 tracking-tighter">{d.hours}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Calendar & Announcements */}
+        <div className="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm space-y-4">
+          <div className="flex items-center justify-between text-xs font-bold border-b border-slate-50 pb-2">
+            <span className="text-slate-800 flex items-center gap-1.5">
+              <Calendar className="h-4 w-4 text-emerald-500" />
+              Calendar & Bulletins
+            </span>
+          </div>
+
+          <div className="space-y-3.5">
+            {/* Jun 12 regular holiday */}
+            <div className="flex items-start justify-between text-xs gap-3">
+              <div className="flex gap-2.5">
+                <div className="bg-rose-50 text-rose-600 font-extrabold text-[10px] p-2 rounded-xl text-center shrink-0 min-w-[36px]">
+                  Jun 12
+                </div>
+                <div>
+                  <h5 className="font-bold text-slate-800 leading-snug">Independence Day</h5>
+                  <p className="text-[9px] text-slate-400 font-semibold mt-0.5">National Regular Holiday</p>
+                </div>
+              </div>
+              <span className="bg-rose-50 border border-rose-100/50 text-rose-600 text-[8px] font-extrabold px-1.5 py-0.5 rounded-md uppercase">
+                Holiday
+              </span>
+            </div>
+
+            {/* Jun 19 cutoff */}
+            <div className="flex items-start justify-between text-xs gap-3">
+              <div className="flex gap-2.5">
+                <div className="bg-amber-50 text-amber-600 font-extrabold text-[10px] p-2 rounded-xl text-center shrink-0 min-w-[36px]">
+                  Jun 19
+                </div>
+                <div>
+                  <h5 className="font-bold text-slate-800 leading-snug">Payroll Cutoff Day</h5>
+                  <p className="text-[9px] text-slate-400 font-semibold mt-0.5">Submit timesheet adjustments</p>
+                </div>
+              </div>
+              <span className="bg-amber-50 border border-amber-100/50 text-amber-600 text-[8px] font-extrabold px-1.5 py-0.5 rounded-md uppercase">
+                Cutoff
+              </span>
+            </div>
+
+            {/* Jun 25 event */}
+            <div className="flex items-start justify-between text-xs gap-3">
+              <div className="flex gap-2.5">
+                <div className="bg-indigo-50 text-indigo-600 font-extrabold text-[10px] p-2 rounded-xl text-center shrink-0 min-w-[36px]">
+                  Jun 24
+                </div>
+                <div>
+                  <h5 className="font-bold text-slate-800 leading-snug">General Assembly</h5>
+                  <p className="text-[9px] text-slate-400 font-semibold mt-0.5">Company-wide midyear townhall</p>
+                </div>
+              </div>
+              <span className="bg-indigo-50 border border-indigo-100/50 text-indigo-600 text-[8px] font-extrabold px-1.5 py-0.5 rounded-md uppercase">
+                Event
+              </span>
+            </div>
+          </div>
+        </div>
+
       </div>
 
       <BiometricScannerModal
