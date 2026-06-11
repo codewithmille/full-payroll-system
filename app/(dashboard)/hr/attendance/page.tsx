@@ -40,12 +40,79 @@ export default function HRAttendancePage() {
   const [iotEmpId, setIotEmpId] = useState<string>('');
   const [iotAlert, setIotAlert] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
+  // ZKTeco states
+  const [zkSyncing, setZkSyncing] = useState(false);
+  const [zkAlert, setZkAlert] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+
   // Initialize first employee for selector
   useEffect(() => {
     if (employees.length > 0) {
       setIotEmpId(employees[0].id);
     }
   }, [employees]);
+
+  const handleZkSync = () => {
+    setZkSyncing(true);
+    setZkAlert(null);
+    
+    setTimeout(() => {
+      const randEmps = ['emp-1', 'emp-2', 'emp-4', 'emp-5', 'emp-7', 'emp-8'];
+      const chosenId1 = randEmps[Math.floor(Math.random() * randEmps.length)];
+      let chosenId2 = randEmps[Math.floor(Math.random() * randEmps.length)];
+      while (chosenId1 === chosenId2) {
+        chosenId2 = randEmps[Math.floor(Math.random() * randEmps.length)];
+      }
+      
+      const emp1 = employees.find(e => e.id === chosenId1);
+      const emp2 = employees.find(e => e.id === chosenId2);
+      
+      if (emp1 && emp2) {
+        mockDb.clockByFingerprintId(emp1.fingerprintId!);
+        mockDb.clockByFingerprintId(emp2.fingerprintId!);
+        
+        setZkAlert({
+          message: `Successfully pulled ZKTeco WL20 logs! Checked ${emp1.firstName} & ${emp2.firstName} over local Wi-Fi.`,
+          type: 'success'
+        });
+        setLogs(mockDb.getAttendanceRecords());
+        logAction(
+          'ZKTECO_WIFI_PULL_SIMULATED',
+          'AttendanceRecord',
+          `Pulled biometric register from ZKTeco WL20 device (IP: 192.168.1.150)`
+        );
+      }
+      setZkSyncing(false);
+      setTimeout(() => setZkAlert(null), 5000);
+    }, 1500);
+  };
+
+  const handleZkCsvUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || e.target.files.length === 0) return;
+    
+    setZkAlert({ message: 'Parsing ZKTeco USB CSV logs file...', type: 'success' });
+    
+    setTimeout(() => {
+      const empIds = ['emp-5', 'emp-8', 'emp-9'];
+      empIds.forEach(id => {
+        const emp = employees.find(e => e.id === id);
+        if (emp) {
+          mockDb.clockByFingerprintId(emp.fingerprintId!);
+        }
+      });
+      
+      setZkAlert({
+        message: 'Successfully imported 3 punches from USB CSV file! Updated Eleanor Vance, Dominic Alvarez, Sofia Rodriguez.',
+        type: 'success'
+      });
+      setLogs(mockDb.getAttendanceRecords());
+      logAction(
+        'ZKTECO_USB_IMPORT_SIMULATED',
+        'AttendanceRecord',
+        `Imported clock register from USB CSV flashdrive`
+      );
+      setTimeout(() => setZkAlert(null), 5000);
+    }, 1200);
+  };
 
   const handleSimulateIot = () => {
     const emp = employees.find(e => e.id === iotEmpId);
@@ -541,6 +608,87 @@ export default function HRAttendancePage() {
                 POST /api/iot/fingerprint<br/>
                 Header: "Content-Type: application/json"<br/>
                 Body: &#123; "fingerprintId": 2, "secretKey": "HR_SYSTEM_IOT_SECRET" &#125;
+              </div>
+            </div>
+
+          </div>
+
+          {/* ZKTeco WL20 WiFi Sync & USB CSV Importer Card */}
+          <div className="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm space-y-4 relative overflow-hidden">
+            <div className="absolute top-0 left-0 right-0 h-1 bg-emerald-500"></div>
+            
+            <div className="flex items-center justify-between border-b border-slate-50 pb-3">
+              <div className="flex items-center space-x-2">
+                <Wifi className="h-5 w-5 text-emerald-500" />
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700">ZKTeco WL20 Manager</h3>
+              </div>
+              <span className="flex h-2 w-2 relative">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+              </span>
+            </div>
+
+            <div className="text-[10px] text-slate-400 font-semibold space-y-2 leading-relaxed">
+              <div className="flex justify-between border-b border-slate-50 pb-1">
+                <span>Device Model:</span>
+                <strong className="text-slate-600">WL20 (Wi-Fi Terminal)</strong>
+              </div>
+              <div className="flex justify-between border-b border-slate-50 pb-1">
+                <span>IP Address:</span>
+                <strong className="text-slate-650 font-mono">192.168.1.150:4370</strong>
+              </div>
+              <div className="flex justify-between border-b border-slate-50 pb-1">
+                <span>Connection Status:</span>
+                <strong className="text-emerald-500 uppercase">Online</strong>
+              </div>
+            </div>
+
+            {/* Alert banner */}
+            {zkAlert && (
+              <div className={`p-3 rounded-xl border text-[10px] font-bold leading-normal flex items-start gap-1.5 ${
+                zkAlert.type === 'success' 
+                  ? 'bg-emerald-50 text-emerald-600 border-emerald-100' 
+                  : 'bg-rose-50 text-rose-700 border-rose-100'
+              }`}>
+                <CheckCircle className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
+                <span>{zkAlert.message}</span>
+              </div>
+            )}
+
+            <div className="space-y-3 pt-1">
+              <button
+                onClick={handleZkSync}
+                disabled={zkSyncing}
+                className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 disabled:from-slate-200 disabled:to-slate-300 text-white text-xs font-black tracking-wider shadow-md shadow-emerald-500/10 active:scale-95 transition-all cursor-pointer flex items-center justify-center space-x-2"
+              >
+                {zkSyncing ? (
+                  <>
+                    <div className="animate-spin rounded-full h-3.5 w-3.5 border-t-2 border-white"></div>
+                    <span>SYNCING DEVICE...</span>
+                  </>
+                ) : (
+                  <>
+                    <Wifi className="h-4 w-4" />
+                    <span>SYNC TERMINAL OVER WI-FI</span>
+                  </>
+                )}
+              </button>
+
+              <div className="relative">
+                <input
+                  type="file"
+                  id="zk-csv-file"
+                  accept=".csv,.txt"
+                  onChange={handleZkCsvUpload}
+                  className="hidden"
+                />
+                <label
+                  htmlFor="zk-csv-file"
+                  className="w-full py-2.5 px-4 rounded-xl border border-dashed border-slate-300 hover:bg-slate-50 text-slate-500 text-xs font-black tracking-wider text-center transition-all cursor-pointer flex items-center justify-center space-x-2"
+                >
+                  <Download className="h-4 w-4 transform rotate-180" />
+                  <span>IMPORT USB CSV LOGS</span>
+                </label>
               </div>
             </div>
 
