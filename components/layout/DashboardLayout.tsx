@@ -191,11 +191,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <div className="p-2 bg-gradient-to-tr from-indigo-500 to-blue-500 rounded-xl shadow-md shadow-indigo-550/10 shrink-0">
                 <Shield className="h-5 w-5 text-white" />
               </div>
-              {!isCollapsed && (
-                <span className="font-black text-lg text-slate-800 tracking-wider">
-                  HR-SYSTEM
-                </span>
-              )}
+              <span className={`font-black text-lg text-slate-800 tracking-wider whitespace-nowrap overflow-hidden transition-all duration-305 ${isCollapsed ? 'max-w-0 opacity-0' : 'max-w-40 opacity-100'}`}>
+                HR-SYSTEM
+              </span>
             </div>
             
             {/* Desktop Collapse Toggle */}
@@ -223,10 +221,17 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           )}
 
           {/* Role Switcher Widget */}
-          <div className={isCollapsed ? "relative flex justify-center" : "p-3.5 bg-slate-50 border border-slate-100 rounded-2xl"}>
-            {!isCollapsed ? (
-              <>
-                <div className="flex items-center gap-2 mb-2 text-[9px] font-bold text-slate-400 uppercase tracking-widest">
+          <div className={`transition-all duration-300 border rounded-2xl overflow-hidden ${
+            isCollapsed 
+              ? 'p-0 bg-transparent border-transparent flex justify-center' 
+              : 'p-3.5 bg-slate-50 border-slate-100'
+          }`}>
+            <div className="relative w-full flex justify-center">
+              {/* Full Expanded view */}
+              <div className={`w-full transition-all duration-300 ${
+                isCollapsed ? 'opacity-0 max-h-0 pointer-events-none overflow-hidden' : 'opacity-100 max-h-24'
+              }`}>
+                <div className="flex items-center gap-2 mb-2 text-[9px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">
                   <ShieldAlert className="h-3.5 w-3.5 text-indigo-500" />
                   <span>Simulate Role</span>
                 </div>
@@ -240,29 +245,34 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   <option value="PAYROLL_OFFICER">Payroll Officer</option>
                   <option value="STAFF">Staff Employee</option>
                 </select>
-              </>
-            ) : (
-              <div className="relative group cursor-pointer">
-                <div className="w-10 h-10 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-500 group-hover:text-indigo-600 transition-colors" title="Simulate Role">
-                  <ShieldAlert className="h-5 w-5 text-indigo-500" />
-                </div>
-                <select
-                  value={user.role}
-                  onChange={handleRoleSwitch}
-                  title="Simulate Role"
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                >
-                  <option value="ADMIN">Administrator</option>
-                  <option value="HR">HR Manager</option>
-                  <option value="PAYROLL_OFFICER">Payroll Officer</option>
-                  <option value="STAFF">Staff Employee</option>
-                </select>
               </div>
-            )}
+
+              {/* Collapsed Icon-only view */}
+              <div className={`transition-all duration-300 ${
+                isCollapsed ? 'opacity-100 max-h-10' : 'opacity-0 max-h-0 pointer-events-none overflow-hidden'
+              }`}>
+                <div className="relative group cursor-pointer">
+                  <div className="w-10 h-10 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-500 group-hover:text-indigo-600 transition-colors" title="Simulate Role">
+                    <ShieldAlert className="h-5 w-5 text-indigo-500" />
+                  </div>
+                  <select
+                    value={user.role}
+                    onChange={handleRoleSwitch}
+                    title="Simulate Role"
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                  >
+                    <option value="ADMIN">Administrator</option>
+                    <option value="HR">HR Manager</option>
+                    <option value="PAYROLL_OFFICER">Payroll Officer</option>
+                    <option value="STAFF">Staff Employee</option>
+                  </select>
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* Navigation Links */}
-          <nav className={`flex flex-col space-y-1.5 overflow-y-auto max-h-[50vh] pr-1 ${isCollapsed ? 'items-center' : ''}`}>
+          <nav className={`flex flex-col space-y-1.5 overflow-y-auto max-h-[50vh] pr-1 transition-all duration-300 ${isCollapsed ? 'items-center' : ''}`}>
             {navLinks.map((link) => {
               const Icon = link.icon;
               const isActive = link.path === '/portal' 
@@ -275,10 +285,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   onClick={() => setIsSidebarOpen(false)}
                   title={isCollapsed ? link.name : undefined}
                   className={`
-                    flex items-center transition-all duration-200 group
+                    flex items-center transition-all duration-300 group
                     ${isCollapsed 
-                      ? 'justify-center w-10 h-10 p-0 rounded-xl text-[11px] font-extrabold tracking-wider' 
-                      : 'space-x-3.5 px-4 py-2.5 w-full rounded-xl text-[11px] font-extrabold tracking-wider'
+                      ? 'justify-center w-10 h-10 p-0 rounded-xl' 
+                      : 'px-4 py-2.5 w-full rounded-xl'
                     }
                     ${isActive 
                       ? 'bg-indigo-50 text-indigo-600 shadow-sm border-l-4 border-indigo-500' 
@@ -287,7 +297,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   `}
                 >
                   <Icon className={`h-4 w-4 shrink-0 ${isActive ? 'text-indigo-600' : 'text-slate-400 group-hover:text-slate-600'}`} />
-                  {!isCollapsed && <span>{link.name}</span>}
+                  <span className={`whitespace-nowrap overflow-hidden transition-all duration-300 ease-in-out ${
+                    isCollapsed ? 'max-w-0 opacity-0 ml-0' : 'max-w-40 opacity-100 ml-3.5'
+                  }`}>
+                    {link.name}
+                  </span>
                 </Link>
               );
             })}
@@ -296,8 +310,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
         {/* User Profile Card */}
         <div className="flex flex-col gap-4 pt-4 border-t border-slate-100">
-          {!isCollapsed ? (
-            <div className="bg-slate-50 border border-slate-100 rounded-2xl p-4 flex flex-col items-center text-center shadow-sm relative overflow-hidden">
+          <div className="relative w-full flex flex-col items-center">
+            {/* Full profile card */}
+            <div className={`w-full bg-slate-50 border border-slate-100 rounded-2xl p-4 flex flex-col items-center text-center shadow-sm relative overflow-hidden transition-all duration-300 ${
+              isCollapsed ? 'opacity-0 max-h-0 py-0 border-transparent pointer-events-none' : 'opacity-100 max-h-48'
+            }`}>
               <div className="h-10 w-10 rounded-full bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center font-extrabold text-xs text-white shadow-inner mb-2 border-2 border-white">
                 {user.name.charAt(0)}
               </div>
@@ -317,8 +334,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 <ArrowRight className="h-3 w-3" />
               </button>
             </div>
-          ) : (
-            <div className="flex flex-col items-center gap-3">
+
+            {/* Collapsed Avatar + Logout icon */}
+            <div className={`flex flex-col items-center gap-3 transition-all duration-300 ${
+              isCollapsed ? 'opacity-100 max-h-24' : 'opacity-0 max-h-0 pointer-events-none overflow-hidden'
+            }`}>
               <div 
                 title={`${user.name} (${user.role === 'ADMIN' ? 'ADMINISTRATOR' : user.role.replace('_', ' ')})`}
                 className="h-10 w-10 rounded-full bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center font-extrabold text-xs text-white shadow-inner border-2 border-white shrink-0"
@@ -336,7 +356,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 <LogOut className="h-4 w-4" />
               </button>
             </div>
-          )}
+          </div>
         </div>
       </aside>
 
