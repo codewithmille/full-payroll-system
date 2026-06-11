@@ -36,12 +36,12 @@ export default function StaffPortalHomePage() {
       if (emp) {
         setProfile(emp);
         const slips = mockDb.getPayslipsByEmployee(emp.id).filter(s => s.status === 'PAID' || s.status === 'ISSUED');
-        setRecentSlips(slips.slice(0, 2));
+        setRecentSlips(slips.slice(0, 5));
         if (slips.length > 0) {
           setLastPayslip(slips[0]);
         }
         setBalances(mockDb.getLeaveBalances(emp.id));
-        setRequests(mockDb.getLeaveRequests().filter(r => r.employeeId === emp.id).slice(0, 2));
+        setRequests(mockDb.getLeaveRequests().filter(r => r.employeeId === emp.id).slice(0, 5));
         
         // Calculate YTD compensation dynamically
         const totalYtd = slips.reduce((acc, s) => acc + s.netPay, 0);
