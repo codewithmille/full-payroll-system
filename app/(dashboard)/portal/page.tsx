@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { mockDb, EmployeeProfile, Payslip, LeaveBalance, LeaveRequest } from '@/lib/mockDb';
+import { mockDb, EmployeeProfile, Payslip, LeaveBalance, LeaveRequest, AttendanceRecord } from '@/lib/mockDb';
 import { useAuth } from '@/components/providers/AuthProvider';
 import Link from 'next/link';
 import { 
@@ -29,6 +29,45 @@ export default function StaffPortalHomePage() {
   const [requests, setRequests] = useState<LeaveRequest[]>([]);
   const [recentSlips, setRecentSlips] = useState<Payslip[]>([]);
   const [ytdCompensation, setYtdCompensation] = useState<number>(0);
+
+  // Attendance Clocking states
+  const [todayRecord, setTodayRecord] = useState<AttendanceRecord | null>(null);
+  const [currentTime, setCurrentTime] = useState<Date | null>(null);
+
+  useEffect(() => {
+    setCurrentTime(new Date());
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const loadAttendance = () => {
+    if (profile) {
+      const record = mockDb.getTodayAttendanceRecord(profile.id);
+      setTodayRecord(record || null);
+    }
+  };
+
+  useEffect(() => {
+    if (profile) {
+      loadAttendance();
+    }
+  }, [profile]);
+
+  const handleClockIn = () => {
+    if (!profile) return;
+    mockDb.clockIn(profile.id);
+    logAction('EMPLOYEE_CLOCK_IN', 'AttendanceRecord', `Employee clocked in.`);
+    loadAttendance();
+  };
+
+  const handleClockOut = () => {
+    if (!profile) return;
+    mockDb.clockOut(profile.id);
+    logAction('EMPLOYEE_CLOCK_OUT', 'AttendanceRecord', `Employee clocked out.`);
+    loadAttendance();
+  };
 
   useEffect(() => {
     if (user) {
@@ -122,6 +161,73 @@ export default function StaffPortalHomePage() {
             </div>
           </div>
 
+        </div>
+
+        {/* Clock In / Out Widget Banner */}
+        <div className="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
+          <div className="flex items-center space-x-4">
+            <div className={`p-3.5 rounded-xl shadow-inner ${
+              !todayRecord 
+                ? 'bg-slate-50 text-slate-400 border border-slate-100' 
+                : todayRecord.clockOut 
+                ? 'bg-slate-100 text-slate-500 border border-slate-200' 
+                : 'bg-emerald-50 text-emerald-600 border border-emerald-100'
+            }`}>
+              <Clock className="h-6 w-6" />
+            </div>
+            <div>
+              <span className="text-[9px] font-extrabold text-indigo-500 tracking-wider uppercase">SHIFTS & TIMEKEEPING</span>
+              <h3 className="text-base font-black text-slate-800 tracking-tight mt-0.5">
+                {!todayRecord 
+                  ? 'Ready to start your day?' 
+                  : todayRecord.clockOut 
+                  ? 'Shift completed!' 
+                  : `Active Shift: Clocked In at ${todayRecord.clockIn}`}
+              </h3>
+              <p className="text-xs text-slate-400 font-semibold mt-0.5">
+                {currentTime ? currentTime.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' }) : ''}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">
+            {/* Live digital time */}
+            <div className="text-center md:text-right px-4 font-mono font-black text-lg text-slate-700 tracking-tight shrink-0 min-w-[120px]">
+              {currentTime ? currentTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : '00:00:00 AM'}
+            </div>
+
+            <div className="flex items-center gap-3 w-full sm:w-auto">
+              {!todayRecord ? (
+                <button
+                  onClick={handleClockIn}
+                  className="flex-1 sm:flex-none py-2 px-6 rounded-xl bg-gradient-to-r from-indigo-500 to-blue-500 hover:from-indigo-600 hover:to-blue-600 text-white text-xs font-extrabold tracking-wider shadow-md shadow-indigo-500/10 active:scale-95 transition-all cursor-pointer"
+                >
+                  CLOCK IN
+                </button>
+              ) : !todayRecord.clockOut ? (
+                <button
+                  onClick={handleClockOut}
+                  className="flex-1 sm:flex-none py-2 px-6 rounded-xl bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white text-xs font-extrabold tracking-wider shadow-md shadow-rose-500/10 active:scale-95 transition-all cursor-pointer"
+                >
+                  CLOCK OUT
+                </button>
+              ) : (
+                <button
+                  disabled
+                  className="flex-1 sm:flex-none py-2 px-6 rounded-xl bg-slate-100 text-slate-400 text-xs font-extrabold tracking-wider cursor-not-allowed border border-slate-200/50"
+                >
+                  COMPLETED
+                </button>
+              )}
+
+              <Link
+                href="/portal/attendance"
+                className="flex-1 sm:flex-none py-2 px-4 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-500 text-xs font-extrabold tracking-wider text-center transition-all cursor-pointer"
+              >
+                VIEW LOGS
+              </Link>
+            </div>
+          </div>
         </div>
 
         {/* Middle row widgets */}

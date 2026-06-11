@@ -111,6 +111,23 @@ export interface AuditLog {
   createdAt: string;
 }
 
+export type AttendanceStatus = 'PRESENT' | 'LATE' | 'ABSENT' | 'HALFDAY';
+
+export interface AttendanceRecord {
+  id: string;
+  employeeId: string;
+  employeeName: string;
+  employeeIdCode: string;
+  department: string;
+  date: string; // YYYY-MM-DD
+  clockIn: string; // HH:MM AM/PM
+  clockOut?: string; // HH:MM AM/PM
+  status: AttendanceStatus;
+  overtimeMinutes?: number;
+  ipAddress?: string;
+  notes?: string;
+}
+
 // Seed Data
 const INITIAL_USERS: User[] = [
   { id: 'u-1', email: 'admin@hr.com', role: 'ADMIN', name: 'Alexander Wright' },
@@ -785,6 +802,134 @@ const INITIAL_AUDIT_LOGS: AuditLog[] = [
   }
 ];
 
+const seedAttendance = (): AttendanceRecord[] => {
+  const records: AttendanceRecord[] = [];
+  const daysToSeed = 7;
+  const today = new Date();
+  
+  for (let d = 1; d <= daysToSeed; d++) {
+    const logDate = new Date();
+    logDate.setDate(today.getDate() - d);
+    const dateStr = logDate.toISOString().split('T')[0];
+    const dayOfWeek = logDate.getDay();
+    
+    // Skip weekends (Saturday = 6, Sunday = 0)
+    if (dayOfWeek === 0 || dayOfWeek === 6) continue;
+    
+    INITIAL_EMPLOYEES.forEach((emp) => {
+      const empNum = parseInt(emp.id.replace('emp-', ''));
+      if (empNum > 9) return; // Only seed the 9 core profiles to prevent local storage bloat
+      
+      const seedVal = (empNum + d) % 15;
+      
+      let clockIn = '08:45 AM';
+      let clockOut = '06:00 PM';
+      let status: AttendanceStatus = 'PRESENT';
+      let ot = 0;
+      let notes = '';
+      
+      if (seedVal === 0) {
+        status = 'ABSENT';
+        clockIn = '';
+        clockOut = '';
+        notes = 'No show';
+      } else if (seedVal === 3 || seedVal === 7) {
+        clockIn = '09:25 AM';
+        status = 'LATE';
+      } else if (seedVal === 11) {
+        clockIn = '08:50 AM';
+        clockOut = '01:00 PM';
+        status = 'HALFDAY';
+        notes = 'Half day morning shift';
+      } else {
+        if (seedVal % 4 === 0) {
+          ot = 60; // 1 hour overtime
+          clockOut = '07:00 PM';
+        }
+      }
+      
+      records.push({
+        id: `att-${dateStr}-${emp.id}`,
+        employeeId: emp.id,
+        employeeName: `${emp.firstName} ${emp.lastName}`,
+        employeeIdCode: emp.employeeId,
+        department: emp.department,
+        date: dateStr,
+        clockIn,
+        clockOut: clockOut || undefined,
+        status,
+        overtimeMinutes: ot || undefined,
+        ipAddress: `192.168.1.${100 + empNum}`,
+        notes: notes || undefined
+      });
+    });
+  }
+  return records;
+};
+
+const SEEDED_ATTENDANCE = seedAttendance();
+
+// Seed a few entries for today (June 11, 2026) to simulate active clock logs
+const todayStr = '2026-06-11';
+SEEDED_ATTENDANCE.push(
+  {
+    id: `att-${todayStr}-emp-1`,
+    employeeId: 'emp-1',
+    employeeName: 'Jane Doe',
+    employeeIdCode: 'EMP-2026-0001',
+    department: 'Product & Design',
+    date: todayStr,
+    clockIn: '08:30 AM',
+    status: 'PRESENT',
+    ipAddress: '192.168.1.101'
+  },
+  {
+    id: `att-${todayStr}-emp-2`,
+    employeeId: 'emp-2',
+    employeeName: 'John Smith',
+    employeeIdCode: 'EMP-2026-0002',
+    department: 'Engineering',
+    date: todayStr,
+    clockIn: '08:45 AM',
+    status: 'PRESENT',
+    ipAddress: '192.168.1.102'
+  },
+  {
+    id: `att-${todayStr}-emp-4`,
+    employeeId: 'emp-4',
+    employeeName: 'Alexander Wright',
+    employeeIdCode: 'EMP-2026-0004',
+    department: 'IT & Security',
+    date: todayStr,
+    clockIn: '08:15 AM',
+    status: 'PRESENT',
+    ipAddress: '192.168.1.104'
+  },
+  {
+    id: `att-${todayStr}-emp-5`,
+    employeeId: 'emp-5',
+    employeeName: 'Eleanor Vance',
+    employeeIdCode: 'EMP-2026-0005',
+    department: 'Human Resources',
+    date: todayStr,
+    clockIn: '09:15 AM',
+    status: 'LATE',
+    ipAddress: '192.168.1.105'
+  },
+  {
+    id: `att-${todayStr}-emp-6`,
+    employeeId: 'emp-6',
+    employeeName: 'Marcus Sterling',
+    employeeIdCode: 'EMP-2026-0006',
+    department: 'Finance',
+    date: todayStr,
+    clockIn: '08:55 AM',
+    clockOut: '06:00 PM',
+    status: 'PRESENT',
+    ipAddress: '192.168.1.106'
+  }
+);
+
 // Helper to interact with LocalStorage (handles Server Side Rendering gracefully)
 class MockDBStore {
   private isBrowser = typeof window !== 'undefined';
@@ -802,7 +947,7 @@ class MockDBStore {
 
   constructor() {
     if (this.isBrowser) {
-      if (!localStorage.getItem('hr_system_initialized_v5')) {
+      if (!localStorage.getItem('hr_system_initialized_v6')) {
         this.set('users', INITIAL_USERS);
         this.set('employees', INITIAL_EMPLOYEES);
         this.set('leave_balances', INITIAL_LEAVE_BALANCES);
@@ -810,7 +955,8 @@ class MockDBStore {
         this.set('payroll_runs', INITIAL_PAYROLL_RUNS);
         this.set('payslips', INITIAL_PAYSLIPS);
         this.set('audit_logs', INITIAL_AUDIT_LOGS);
-        localStorage.setItem('hr_system_initialized_v5', 'true');
+        this.set('attendance', SEEDED_ATTENDANCE);
+        localStorage.setItem('hr_system_initialized_v6', 'true');
       }
     }
   }
@@ -1158,6 +1304,136 @@ class MockDBStore {
     };
     logs.unshift(newLog);
     this.set('audit_logs', logs);
+  }
+
+  // Attendance
+  getAttendanceRecords(): AttendanceRecord[] {
+    return this.get('attendance', SEEDED_ATTENDANCE);
+  }
+
+  getAttendanceRecordsByEmployee(employeeId: string): AttendanceRecord[] {
+    return this.getAttendanceRecords().filter(att => att.employeeId === employeeId);
+  }
+
+  getTodayAttendanceRecord(employeeId: string): AttendanceRecord | undefined {
+    const todayStr = new Date().toISOString().split('T')[0];
+    return this.getAttendanceRecords().find(att => att.employeeId === employeeId && att.date === todayStr);
+  }
+
+  clockIn(employeeId: string, timeStr?: string): AttendanceRecord {
+    const list = this.getAttendanceRecords();
+    const todayStr = new Date().toISOString().split('T')[0];
+    
+    const existingIndex = list.findIndex(att => att.employeeId === employeeId && att.date === todayStr);
+    if (existingIndex !== -1) {
+      return list[existingIndex];
+    }
+    
+    const emp = this.getEmployee(employeeId);
+    if (!emp) throw new Error('Employee not found');
+    
+    const now = new Date();
+    const defaultTimeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    const clockInTime = timeStr || defaultTimeStr;
+    
+    let isLate = false;
+    if (!timeStr) {
+      const hours = now.getHours();
+      const minutes = now.getMinutes();
+      if (hours > 9 || (hours === 9 && minutes > 0)) {
+        isLate = true;
+      }
+    } else {
+      const match = clockInTime.match(/(\d+):(\d+)\s*(AM|PM)/i);
+      if (match) {
+        let hrs = parseInt(match[1]);
+        const mins = parseInt(match[2]);
+        const ampm = match[3].toUpperCase();
+        if (ampm === 'PM' && hrs < 12) hrs += 12;
+        if (ampm === 'AM' && hrs === 12) hrs = 0;
+        
+        if (hrs > 9 || (hrs === 9 && mins > 0)) {
+          isLate = true;
+        }
+      }
+    }
+    
+    const newRecord: AttendanceRecord = {
+      id: `att-${todayStr}-${employeeId}`,
+      employeeId,
+      employeeName: `${emp.firstName} ${emp.lastName}`,
+      employeeIdCode: emp.employeeId,
+      department: emp.department,
+      date: todayStr,
+      clockIn: clockInTime,
+      status: isLate ? 'LATE' : 'PRESENT',
+      ipAddress: '192.168.1.50'
+    };
+    
+    list.unshift(newRecord);
+    this.set('attendance', list);
+    return newRecord;
+  }
+
+  clockOut(employeeId: string, timeStr?: string): AttendanceRecord | undefined {
+    const list = this.getAttendanceRecords();
+    const todayStr = new Date().toISOString().split('T')[0];
+    
+    const index = list.findIndex(att => att.employeeId === employeeId && att.date === todayStr);
+    if (index === -1) return undefined;
+    
+    const record = { ...list[index] };
+    const now = new Date();
+    const defaultTimeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    const clockOutTime = timeStr || defaultTimeStr;
+    
+    record.clockOut = clockOutTime;
+    
+    let otMins = 0;
+    let outHrs = 0;
+    let outMins = 0;
+    
+    const match = clockOutTime.match(/(\d+):(\d+)\s*(AM|PM)/i);
+    if (match) {
+      outHrs = parseInt(match[1]);
+      outMins = parseInt(match[2]);
+      const ampm = match[3].toUpperCase();
+      if (ampm === 'PM' && outHrs < 12) outHrs += 12;
+      if (ampm === 'AM' && outHrs === 12) outHrs = 0;
+      
+      const outTotalMins = outHrs * 60 + outMins;
+      const shiftEndMins = 18 * 60; // 6:00 PM
+      if (outTotalMins > shiftEndMins) {
+        otMins = outTotalMins - shiftEndMins;
+      }
+    }
+    
+    if (otMins > 0) {
+      record.overtimeMinutes = otMins;
+    }
+    
+    list[index] = record;
+    this.set('attendance', list);
+    return record;
+  }
+
+  saveAttendanceRecord(record: AttendanceRecord): AttendanceRecord {
+    const list = this.getAttendanceRecords();
+    const index = list.findIndex(att => att.id === record.id);
+    
+    if (index !== -1) {
+      list[index] = record;
+    } else {
+      list.unshift(record);
+    }
+    
+    this.set('attendance', list);
+    return record;
+  }
+
+  deleteAttendanceRecord(id: string): void {
+    const list = this.getAttendanceRecords().filter(att => att.id !== id);
+    this.set('attendance', list);
   }
 }
 

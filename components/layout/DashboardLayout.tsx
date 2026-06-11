@@ -15,7 +15,8 @@ import {
   X, 
   LayoutDashboard,
   Shield,
-  ArrowRight
+  ArrowRight,
+  Clock
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -78,6 +79,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     });
 
     links.push({
+      name: 'MY ATTENDANCE',
+      icon: Clock,
+      path: '/portal/attendance',
+      roles: ['ADMIN', 'HR', 'PAYROLL_OFFICER', 'STAFF']
+    });
+
+    links.push({
       name: 'EMPLOYEES',
       icon: Users,
       path: '/hr/employees',
@@ -88,6 +96,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       name: 'LEAVE QUEUE',
       icon: Calendar,
       path: '/hr/leaves',
+      roles: ['ADMIN', 'HR']
+    });
+
+    links.push({
+      name: 'ATTENDANCE',
+      icon: Clock,
+      path: '/hr/attendance',
       roles: ['ADMIN', 'HR']
     });
 
