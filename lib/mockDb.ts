@@ -118,6 +118,9 @@ const INITIAL_USERS: User[] = [
   { id: 'u-3', email: 'payroll@hr.com', role: 'PAYROLL_OFFICER', name: 'Marcus Sterling' },
   { id: 'u-4', email: 'jane@hr.com', role: 'STAFF', name: 'Jane Doe' },
   { id: 'u-5', email: 'john@hr.com', role: 'STAFF', name: 'John Smith' },
+  { id: 'u-6', email: 'christina@hr.com', role: 'STAFF', name: 'Christina Mercado' },
+  { id: 'u-7', email: 'dominic@hr.com', role: 'STAFF', name: 'Dominic Alvarez' },
+  { id: 'u-8', email: 'sofia@hr.com', role: 'STAFF', name: 'Sofia Rodriguez' },
 ];
 
 const INITIAL_EMPLOYEES: EmployeeProfile[] = [
@@ -129,10 +132,10 @@ const INITIAL_EMPLOYEES: EmployeeProfile[] = [
     lastName: 'Doe',
     middleName: 'Marie',
     personalEmail: 'jane@hr.com',
-    phone: '+1 (555) 019-2834',
+    phone: '+63 917 123 4567',
     dateOfBirth: '1992-04-15',
     gender: 'Female',
-    address: '742 Evergreen Terrace, Springfield',
+    address: 'Makati City, Metro Manila',
     jobTitle: 'Senior UX Designer',
     department: 'Product & Design',
     dateHired: '2022-03-01',
@@ -140,7 +143,7 @@ const INITIAL_EMPLOYEES: EmployeeProfile[] = [
     employmentType: 'FULL_TIME',
     baseSalary: 78000,
     taxIdNumber: 'TIN-342-901-223',
-    socialSecurityNo: 'SS-90-234293-2',
+    socialSecurityNo: 'SSS-90-234293-2',
     healthInsuranceNo: 'PH-4491-0021-3',
     housingFundNo: 'PI-9021-9988-2',
     bankName: 'Apex Security Bank',
@@ -154,10 +157,10 @@ const INITIAL_EMPLOYEES: EmployeeProfile[] = [
     lastName: 'Smith',
     middleName: 'David',
     personalEmail: 'john@hr.com',
-    phone: '+1 (555) 014-9981',
+    phone: '+63 918 234 5678',
     dateOfBirth: '1989-11-23',
     gender: 'Male',
-    address: '123 Baker Street, London',
+    address: 'Quezon City, Metro Manila',
     jobTitle: 'Lead Software Engineer',
     department: 'Engineering',
     dateHired: '2021-06-15',
@@ -165,7 +168,7 @@ const INITIAL_EMPLOYEES: EmployeeProfile[] = [
     employmentType: 'FULL_TIME',
     baseSalary: 95000,
     taxIdNumber: 'TIN-109-887-212',
-    socialSecurityNo: 'SS-88-112233-4',
+    socialSecurityNo: 'SSS-88-112233-4',
     healthInsuranceNo: 'PH-1122-3344-5',
     housingFundNo: 'PI-8877-6655-4',
     bankName: 'Global Trust Finance',
@@ -178,10 +181,10 @@ const INITIAL_EMPLOYEES: EmployeeProfile[] = [
     lastName: 'Jenkins',
     middleName: 'Ann',
     personalEmail: 'sarah.j@external.com',
-    phone: '+1 (555) 022-1133',
+    phone: '+63 919 345 6789',
     dateOfBirth: '1995-08-05',
     gender: 'Female',
-    address: '456 Oak Lane, Pineville',
+    address: 'Pasig City, Metro Manila',
     jobTitle: 'Content Specialist',
     department: 'Marketing',
     dateHired: '2024-01-10',
@@ -189,7 +192,7 @@ const INITIAL_EMPLOYEES: EmployeeProfile[] = [
     employmentType: 'CONTRACTOR',
     baseSalary: 48000,
     taxIdNumber: 'TIN-987-654-321',
-    socialSecurityNo: 'SS-55-667788-9',
+    socialSecurityNo: 'SSS-55-667788-9',
     healthInsuranceNo: 'PH-5566-7788-9',
     housingFundNo: 'PI-5544-3322-1',
     bankName: 'Pioneer Savings Bank',
@@ -203,10 +206,10 @@ const INITIAL_EMPLOYEES: EmployeeProfile[] = [
     lastName: 'Wright',
     middleName: 'James',
     personalEmail: 'admin@hr.com',
-    phone: '+1 (555) 011-2233',
+    phone: '+63 917 999 8888',
     dateOfBirth: '1985-02-10',
     gender: 'Male',
-    address: '55 Wall Street, New York',
+    address: 'BGC, Taguig City',
     jobTitle: 'System Administrator',
     department: 'IT & Security',
     dateHired: '2020-01-15',
@@ -214,7 +217,7 @@ const INITIAL_EMPLOYEES: EmployeeProfile[] = [
     employmentType: 'FULL_TIME',
     baseSalary: 120000,
     taxIdNumber: 'TIN-445-123-998',
-    socialSecurityNo: 'SS-11-222333-4',
+    socialSecurityNo: 'SSS-11-222333-4',
     healthInsuranceNo: 'PH-3333-4444-5',
     housingFundNo: 'PI-1111-2222-3',
     bankName: 'Apex Security Bank',
@@ -228,10 +231,10 @@ const INITIAL_EMPLOYEES: EmployeeProfile[] = [
     lastName: 'Vance',
     middleName: 'Grace',
     personalEmail: 'hr@hr.com',
-    phone: '+1 (555) 015-4455',
+    phone: '+63 917 555 4444',
     dateOfBirth: '1987-07-19',
     gender: 'Female',
-    address: '456 Primrose Path, Boston',
+    address: 'Alabang, Muntinlupa City',
     jobTitle: 'HR Director',
     department: 'Human Resources',
     dateHired: '2021-08-01',
@@ -239,7 +242,7 @@ const INITIAL_EMPLOYEES: EmployeeProfile[] = [
     employmentType: 'FULL_TIME',
     baseSalary: 85000,
     taxIdNumber: 'TIN-554-998-332',
-    socialSecurityNo: 'SS-22-333444-5',
+    socialSecurityNo: 'SSS-22-333444-5',
     healthInsuranceNo: 'PH-5555-6666-7',
     housingFundNo: 'PI-2222-3333-4',
     bankName: 'Apex Security Bank',
@@ -253,10 +256,10 @@ const INITIAL_EMPLOYEES: EmployeeProfile[] = [
     lastName: 'Sterling',
     middleName: 'Thomas',
     personalEmail: 'payroll@hr.com',
-    phone: '+1 (555) 018-7788',
+    phone: '+63 918 777 6666',
     dateOfBirth: '1990-10-05',
     gender: 'Male',
-    address: '789 Silver Linings, Chicago',
+    address: 'Mandaluyong City, Metro Manila',
     jobTitle: 'Payroll Supervisor',
     department: 'Finance',
     dateHired: '2023-04-10',
@@ -264,11 +267,86 @@ const INITIAL_EMPLOYEES: EmployeeProfile[] = [
     employmentType: 'FULL_TIME',
     baseSalary: 80000,
     taxIdNumber: 'TIN-776-889-112',
-    socialSecurityNo: 'SS-33-444555-6',
+    socialSecurityNo: 'SSS-33-444555-6',
     healthInsuranceNo: 'PH-7777-8888-9',
     housingFundNo: 'PI-3333-4444-5',
     bankName: 'Global Trust Finance',
     bankAccountNumber: '5566778899'
+  },
+  {
+    id: 'emp-7',
+    userId: 'u-6',
+    employeeId: 'EMP-2026-0007',
+    firstName: 'Christina',
+    lastName: 'Mercado',
+    middleName: 'Santos',
+    personalEmail: 'christina@hr.com',
+    phone: '+63 919 444 3333',
+    dateOfBirth: '1993-06-25',
+    gender: 'Female',
+    address: 'Ortigas, Pasig City',
+    jobTitle: 'Senior Marketing Manager',
+    department: 'Marketing',
+    dateHired: '2023-01-15',
+    employmentStatus: 'ACTIVE',
+    employmentType: 'FULL_TIME',
+    baseSalary: 85000,
+    taxIdNumber: 'TIN-221-445-889',
+    socialSecurityNo: 'SSS-44-555666-7',
+    healthInsuranceNo: 'PH-4444-5555-6',
+    housingFundNo: 'PI-4444-5555-6',
+    bankName: 'Global Trust Finance',
+    bankAccountNumber: '2233445566'
+  },
+  {
+    id: 'emp-8',
+    userId: 'u-7',
+    employeeId: 'EMP-2026-0008',
+    firstName: 'Dominic',
+    lastName: 'Alvarez',
+    middleName: 'Reyes',
+    personalEmail: 'dominic@hr.com',
+    phone: '+63 916 222 1111',
+    dateOfBirth: '1991-09-12',
+    gender: 'Male',
+    address: 'Paranaque City, Metro Manila',
+    jobTitle: 'DevOps Engineer',
+    department: 'Engineering',
+    dateHired: '2024-05-20',
+    employmentStatus: 'ACTIVE',
+    employmentType: 'FULL_TIME',
+    baseSalary: 90000,
+    taxIdNumber: 'TIN-332-556-990',
+    socialSecurityNo: 'SSS-55-666777-8',
+    healthInsuranceNo: 'PH-6666-7777-8',
+    housingFundNo: 'PI-5555-6666-7',
+    bankName: 'Apex Security Bank',
+    bankAccountNumber: '7788990011'
+  },
+  {
+    id: 'emp-9',
+    userId: 'u-8',
+    employeeId: 'EMP-2026-0009',
+    firstName: 'Sofia',
+    lastName: 'Rodriguez',
+    middleName: 'Cruz',
+    personalEmail: 'sofia@hr.com',
+    phone: '+63 915 888 7777',
+    dateOfBirth: '1996-03-01',
+    gender: 'Female',
+    address: 'Manila City, Metro Manila',
+    jobTitle: 'HR Specialist',
+    department: 'Human Resources',
+    dateHired: '2025-03-01',
+    employmentStatus: 'ACTIVE',
+    employmentType: 'FULL_TIME',
+    baseSalary: 55000,
+    taxIdNumber: 'TIN-112-334-556',
+    socialSecurityNo: 'SSS-66-777888-9',
+    healthInsuranceNo: 'PH-8888-9999-0',
+    housingFundNo: 'PI-6666-7777-8',
+    bankName: 'Pioneer Savings Bank',
+    bankAccountNumber: '3344556677'
   }
 ];
 
@@ -295,7 +373,19 @@ const INITIAL_LEAVE_BALANCES: LeaveBalance[] = [
 
   { id: 'lb-16', employeeId: 'emp-6', leaveType: 'VACATION', allocated: 15, used: 1, pending: 0 },
   { id: 'lb-17', employeeId: 'emp-6', leaveType: 'SICK', allocated: 10, used: 2, pending: 0 },
-  { id: 'lb-18', employeeId: 'emp-6', leaveType: 'EMERGENCY', allocated: 5, used: 0, pending: 0 }
+  { id: 'lb-18', employeeId: 'emp-6', leaveType: 'EMERGENCY', allocated: 5, used: 0, pending: 0 },
+
+  { id: 'lb-19', employeeId: 'emp-7', leaveType: 'VACATION', allocated: 15, used: 2, pending: 0 },
+  { id: 'lb-20', employeeId: 'emp-7', leaveType: 'SICK', allocated: 10, used: 1, pending: 0 },
+  { id: 'lb-21', employeeId: 'emp-7', leaveType: 'EMERGENCY', allocated: 5, used: 0, pending: 0 },
+
+  { id: 'lb-22', employeeId: 'emp-8', leaveType: 'VACATION', allocated: 15, used: 0, pending: 0 },
+  { id: 'lb-23', employeeId: 'emp-8', leaveType: 'SICK', allocated: 10, used: 0, pending: 0 },
+  { id: 'lb-24', employeeId: 'emp-8', leaveType: 'EMERGENCY', allocated: 5, used: 0, pending: 0 },
+
+  { id: 'lb-25', employeeId: 'emp-9', leaveType: 'VACATION', allocated: 15, used: 1, pending: 0 },
+  { id: 'lb-26', employeeId: 'emp-9', leaveType: 'SICK', allocated: 10, used: 0, pending: 0 },
+  { id: 'lb-27', employeeId: 'emp-9', leaveType: 'EMERGENCY', allocated: 5, used: 0, pending: 0 }
 ];
 
 const INITIAL_LEAVE_REQUESTS: LeaveRequest[] = [
@@ -330,9 +420,60 @@ const INITIAL_LEAVE_REQUESTS: LeaveRequest[] = [
     endDate: '2026-05-12',
     reason: 'Long weekend out of town',
     status: 'APPROVED',
-    approvedById: 'emp-2',
-    approvedByName: 'John Smith',
+    approvedById: 'emp-5',
+    approvedByName: 'Eleanor Vance',
     createdAt: '2026-05-02T10:00:00Z'
+  },
+  {
+    id: 'lr-4',
+    employeeId: 'emp-5',
+    employeeName: 'Eleanor Vance',
+    leaveType: 'VACATION',
+    startDate: '2026-06-18',
+    endDate: '2026-06-19',
+    reason: 'Personal errands and rest',
+    status: 'PENDING',
+    createdAt: '2026-06-11T10:00:00Z'
+  },
+  {
+    id: 'lr-5',
+    employeeId: 'emp-6',
+    employeeName: 'Marcus Sterling',
+    leaveType: 'SICK',
+    startDate: '2026-04-12',
+    endDate: '2026-04-14',
+    reason: 'High fever and flu recovery',
+    status: 'APPROVED',
+    approvedById: 'emp-5',
+    approvedByName: 'Eleanor Vance',
+    createdAt: '2026-04-11T08:30:00Z'
+  },
+  {
+    id: 'lr-6',
+    employeeId: 'emp-7',
+    employeeName: 'Christina Mercado',
+    leaveType: 'VACATION',
+    startDate: '2026-03-15',
+    endDate: '2026-03-20',
+    reason: 'Out of country vacation',
+    status: 'APPROVED',
+    approvedById: 'emp-5',
+    approvedByName: 'Eleanor Vance',
+    createdAt: '2026-03-01T09:00:00Z'
+  },
+  {
+    id: 'lr-7',
+    employeeId: 'emp-3',
+    employeeName: 'Sarah Jenkins',
+    leaveType: 'VACATION',
+    startDate: '2026-05-01',
+    endDate: '2026-05-05',
+    reason: 'Family reunion',
+    status: 'REJECTED',
+    approvedById: 'emp-5',
+    approvedByName: 'Eleanor Vance',
+    rejectionReason: 'Peak marketing campaign week. Please reschedule.',
+    createdAt: '2026-04-15T10:00:00Z'
   }
 ];
 
@@ -344,129 +485,140 @@ const INITIAL_PAYROLL_RUNS: PayrollRun[] = [
     endDate: '2026-05-31',
     paymentDate: '2026-05-30',
     status: 'PAID',
-    totalGrossPay: 221000,
-    totalNetPay: 181250,
-    totalDeductions: 39750,
+    totalGrossPay: 0,
+    totalNetPay: 0,
+    totalDeductions: 0,
     createdAt: '2026-05-25T08:00:00Z'
+  },
+  {
+    id: 'pr-2',
+    name: 'April 2026 Monthly Payroll',
+    startDate: '2026-04-01',
+    endDate: '2026-04-30',
+    paymentDate: '2026-04-30',
+    status: 'PAID',
+    totalGrossPay: 0,
+    totalNetPay: 0,
+    totalDeductions: 0,
+    createdAt: '2026-04-25T08:00:00Z'
+  },
+  {
+    id: 'pr-3',
+    name: 'March 2026 Monthly Payroll',
+    startDate: '2026-03-01',
+    endDate: '2026-03-31',
+    paymentDate: '2026-03-30',
+    status: 'PAID',
+    totalGrossPay: 0,
+    totalNetPay: 0,
+    totalDeductions: 0,
+    createdAt: '2026-03-25T08:00:00Z'
+  },
+  {
+    id: 'pr-4',
+    name: 'February 2026 Monthly Payroll',
+    startDate: '2026-02-01',
+    endDate: '2026-02-28',
+    paymentDate: '2026-02-27',
+    status: 'PAID',
+    totalGrossPay: 0,
+    totalNetPay: 0,
+    totalDeductions: 0,
+    createdAt: '2026-02-22T08:00:00Z'
+  },
+  {
+    id: 'pr-5',
+    name: 'January 2026 Monthly Payroll',
+    startDate: '2026-01-01',
+    endDate: '2026-01-31',
+    paymentDate: '2026-01-30',
+    status: 'PAID',
+    totalGrossPay: 0,
+    totalNetPay: 0,
+    totalDeductions: 0,
+    createdAt: '2026-01-25T08:00:00Z'
   }
 ];
 
-const INITIAL_PAYSLIPS: Payslip[] = [
-  {
-    id: 'ps-1',
-    payrollRunId: 'pr-1',
-    employeeId: 'emp-1',
-    employeeName: 'Jane Doe',
-    employeeIdCode: 'EMP-2026-0001',
-    jobTitle: 'Senior UX Designer',
-    department: 'Product & Design',
-    baseSalary: 78000,
-    overtimePay: 2400,
-    allowances: [{ name: 'Rice & Meal', amount: 1500 }, { name: 'Communication', amount: 1000 }],
-    grossPay: 82900,
-    taxWithheld: 9500,
-    statutoryDeductions: [{ name: 'SSS', amount: 800 }, { name: 'PhilHealth', amount: 450 }, { name: 'Pag-IBIG', amount: 200 }],
-    otherDeductions: [],
-    totalDeductions: 10950,
-    netPay: 71950,
-    status: 'PAID'
-  },
-  {
-    id: 'ps-2',
-    payrollRunId: 'pr-1',
-    employeeId: 'emp-2',
-    employeeName: 'John Smith',
-    employeeIdCode: 'EMP-2026-0002',
-    jobTitle: 'Lead Software Engineer',
-    department: 'Engineering',
-    baseSalary: 95000,
-    overtimePay: 0,
-    allowances: [{ name: 'Communication', amount: 1500 }, { name: 'Health Wellness', amount: 2000 }],
-    grossPay: 98500,
-    taxWithheld: 14200,
-    statutoryDeductions: [{ name: 'SSS', amount: 1000 }, { name: 'PhilHealth', amount: 550 }, { name: 'Pag-IBIG', amount: 200 }],
-    otherDeductions: [{ name: 'Gym Membership Co-pay', amount: 150 }],
-    totalDeductions: 16100,
-    netPay: 82400,
-    status: 'PAID'
-  },
-  {
-    id: 'ps-3',
-    payrollRunId: 'pr-1',
-    employeeId: 'emp-3',
-    employeeName: 'Sarah Jenkins',
-    employeeIdCode: 'EMP-2026-0003',
-    jobTitle: 'Content Specialist',
-    department: 'Marketing',
-    baseSalary: 40000, // base salary computed for part period
-    overtimePay: 0,
-    allowances: [],
-    grossPay: 40000,
-    taxWithheld: 4200,
-    statutoryDeductions: [{ name: 'SSS', amount: 400 }, { name: 'PhilHealth', amount: 250 }, { name: 'Pag-IBIG', amount: 100 }],
-    otherDeductions: [],
-    totalDeductions: 4950,
-    netPay: 35050,
-    status: 'PAID'
-  },
-  {
-    id: 'ps-4',
-    payrollRunId: 'pr-1',
-    employeeId: 'emp-4',
-    employeeName: 'Alexander Wright',
-    employeeIdCode: 'EMP-2026-0004',
-    jobTitle: 'System Administrator',
-    department: 'IT & Security',
-    baseSalary: 120000,
-    overtimePay: 0,
-    allowances: [{ name: 'Rice & Meal', amount: 1500 }, { name: 'Communication', amount: 1500 }],
-    grossPay: 123000,
-    taxWithheld: 27000,
-    statutoryDeductions: [{ name: 'SSS', amount: 1200 }, { name: 'PhilHealth', amount: 600 }, { name: 'Pag-IBIG', amount: 200 }],
-    otherDeductions: [],
-    totalDeductions: 29000,
-    netPay: 94000,
-    status: 'PAID'
-  },
-  {
-    id: 'ps-5',
-    payrollRunId: 'pr-1',
-    employeeId: 'emp-5',
-    employeeName: 'Eleanor Vance',
-    employeeIdCode: 'EMP-2026-0005',
-    jobTitle: 'HR Director',
-    department: 'Human Resources',
-    baseSalary: 85000,
-    overtimePay: 0,
-    allowances: [{ name: 'Rice & Meal', amount: 1500 }, { name: 'Communication', amount: 1000 }],
-    grossPay: 87500,
-    taxWithheld: 15750,
-    statutoryDeductions: [{ name: 'SSS', amount: 900 }, { name: 'PhilHealth', amount: 500 }, { name: 'Pag-IBIG', amount: 200 }],
-    otherDeductions: [],
-    totalDeductions: 17350,
-    netPay: 70150,
-    status: 'PAID'
-  },
-  {
-    id: 'ps-6',
-    payrollRunId: 'pr-1',
-    employeeId: 'emp-6',
-    employeeName: 'Marcus Sterling',
-    employeeIdCode: 'EMP-2026-0006',
-    jobTitle: 'Payroll Supervisor',
-    department: 'Finance',
-    baseSalary: 80000,
-    overtimePay: 0,
-    allowances: [{ name: 'Rice & Meal', amount: 1500 }, { name: 'Communication', amount: 1000 }],
-    grossPay: 82500,
-    taxWithheld: 14850,
-    statutoryDeductions: [{ name: 'SSS', amount: 850 }, { name: 'PhilHealth', amount: 450 }, { name: 'Pag-IBIG', amount: 200 }],
-    otherDeductions: [],
-    totalDeductions: 16350,
-    netPay: 66150,
-    status: 'PAID'
-  }
-];
+// Generate payslips dynamically across all 5 historical cycles
+const INITIAL_PAYSLIPS: Payslip[] = [];
+
+INITIAL_PAYROLL_RUNS.forEach((run) => {
+  let runGross = 0;
+  let runDeductions = 0;
+  let runNet = 0;
+
+  INITIAL_EMPLOYEES.forEach((emp) => {
+    const base = emp.baseSalary;
+    
+    // Add small random overtime to some employees to make data look real
+    const ot = (parseInt(emp.id.replace('emp-', '')) + run.id.charCodeAt(3)) % 3 === 0 
+      ? (base > 80000 ? 3500 : 2000) 
+      : 0;
+
+    const allowances = [
+      { name: 'Rice & Meal', amount: 1500 },
+      { name: 'Communication', amount: 1000 }
+    ];
+    const allowanceSum = allowances.reduce((acc, a) => acc + a.amount, 0);
+    const gross = base + ot + allowanceSum;
+
+    // Progressive tax withheld
+    let taxRate = 0.10;
+    if (gross > 90000) taxRate = 0.22;
+    else if (gross > 70000) taxRate = 0.18;
+    else if (gross > 40000) taxRate = 0.12;
+    const tax = Math.round(gross * taxRate);
+
+    // Statutory deductions
+    const sss = Math.round(base * 0.045);
+    const philhealth = Math.round(base * 0.02);
+    const pagibig = 200;
+    const statutory = [
+      { name: 'SSS Contribution', amount: sss },
+      { name: 'PhilHealth Contribution', amount: philhealth },
+      { name: 'Pag-IBIG Contribution', amount: pagibig }
+    ];
+    const statutorySum = sss + philhealth + pagibig;
+    
+    const other: { name: string; amount: number }[] = [];
+    if (emp.id === 'emp-2') {
+      other.push({ name: 'Gym Membership Co-pay', amount: 150 });
+    }
+    const otherSum = other.reduce((acc, o) => acc + o.amount, 0);
+
+    const totalDeductions = tax + statutorySum + otherSum;
+    const net = gross - totalDeductions;
+
+    INITIAL_PAYSLIPS.push({
+      id: `ps-${run.id.replace('pr-', '')}-${emp.id}`,
+      payrollRunId: run.id,
+      employeeId: emp.id,
+      employeeName: `${emp.firstName} ${emp.lastName}`,
+      employeeIdCode: emp.employeeId,
+      jobTitle: emp.jobTitle,
+      department: emp.department,
+      baseSalary: base,
+      overtimePay: ot,
+      allowances,
+      grossPay: gross,
+      taxWithheld: tax,
+      statutoryDeductions: statutory,
+      otherDeductions: other,
+      totalDeductions,
+      netPay: net,
+      status: 'PAID'
+    });
+
+    runGross += gross;
+    runDeductions += totalDeductions;
+    runNet += net;
+  });
+
+  run.totalGrossPay = runGross;
+  run.totalDeductions = runDeductions;
+  run.totalNetPay = runNet;
+});
 
 const INITIAL_AUDIT_LOGS: AuditLog[] = [
   {
@@ -480,6 +632,78 @@ const INITIAL_AUDIT_LOGS: AuditLog[] = [
     details: 'Secure HR-SYSTEM initialized with seed profiles, leave matrices, and role parameters.',
     ipAddress: '192.168.1.1',
     createdAt: '2026-06-11T12:00:00Z'
+  },
+  {
+    id: 'log-2',
+    userId: 'u-3',
+    userName: 'Marcus Sterling',
+    userEmail: 'payroll@hr.com',
+    role: 'PAYROLL_OFFICER',
+    action: 'RUN_PAYROLL',
+    resource: 'PayrollRun/pr-1',
+    details: 'Approved and finalized May 2026 Monthly Payroll cycle for 9 active staff members.',
+    ipAddress: '192.168.1.15',
+    createdAt: '2026-05-30T17:00:00Z'
+  },
+  {
+    id: 'log-3',
+    userId: 'u-2',
+    userName: 'Eleanor Vance',
+    userEmail: 'hr@hr.com',
+    role: 'HR',
+    action: 'ONBOARD_NEW_EMPLOYEE',
+    resource: 'EmployeeProfile/emp-9',
+    details: 'Onboarded Sofia Rodriguez (EMP-2026-0009) as HR Specialist in Human Resources.',
+    ipAddress: '192.168.1.12',
+    createdAt: '2026-05-02T09:30:00Z'
+  },
+  {
+    id: 'log-4',
+    userId: 'u-2',
+    userName: 'Eleanor Vance',
+    userEmail: 'hr@hr.com',
+    role: 'HR',
+    action: 'APPROVE_LEAVE_REQUEST',
+    resource: 'LeaveRequest/lr-3',
+    details: 'Approved Vacation leave application for Jane Doe from 2026-05-10 to 2026-05-12.',
+    ipAddress: '192.168.1.12',
+    createdAt: '2026-05-02T10:00:00Z'
+  },
+  {
+    id: 'log-5',
+    userId: 'u-3',
+    userName: 'Marcus Sterling',
+    userEmail: 'payroll@hr.com',
+    role: 'PAYROLL_OFFICER',
+    action: 'RUN_PAYROLL',
+    resource: 'PayrollRun/pr-2',
+    details: 'Approved and finalized April 2026 Monthly Payroll cycle.',
+    ipAddress: '192.168.1.15',
+    createdAt: '2026-04-30T17:30:00Z'
+  },
+  {
+    id: 'log-6',
+    userId: 'u-2',
+    userName: 'Eleanor Vance',
+    userEmail: 'hr@hr.com',
+    role: 'HR',
+    action: 'APPROVE_LEAVE_REQUEST',
+    resource: 'LeaveRequest/lr-5',
+    details: 'Approved Sick leave application for Marcus Sterling from 2026-04-12 to 2026-04-14.',
+    ipAddress: '192.168.1.12',
+    createdAt: '2026-04-11T09:00:00Z'
+  },
+  {
+    id: 'log-7',
+    userId: 'u-3',
+    userName: 'Marcus Sterling',
+    userEmail: 'payroll@hr.com',
+    role: 'PAYROLL_OFFICER',
+    action: 'RUN_PAYROLL',
+    resource: 'PayrollRun/pr-3',
+    details: 'Approved and finalized March 2026 Monthly Payroll cycle.',
+    ipAddress: '192.168.1.15',
+    createdAt: '2026-03-30T18:00:00Z'
   }
 ];
 
@@ -500,7 +724,7 @@ class MockDBStore {
 
   constructor() {
     if (this.isBrowser) {
-      if (!localStorage.getItem('hr_system_initialized_v3')) {
+      if (!localStorage.getItem('hr_system_initialized_v4')) {
         this.set('users', INITIAL_USERS);
         this.set('employees', INITIAL_EMPLOYEES);
         this.set('leave_balances', INITIAL_LEAVE_BALANCES);
@@ -508,7 +732,7 @@ class MockDBStore {
         this.set('payroll_runs', INITIAL_PAYROLL_RUNS);
         this.set('payslips', INITIAL_PAYSLIPS);
         this.set('audit_logs', INITIAL_AUDIT_LOGS);
-        localStorage.setItem('hr_system_initialized_v3', 'true');
+        localStorage.setItem('hr_system_initialized_v4', 'true');
       }
     }
   }

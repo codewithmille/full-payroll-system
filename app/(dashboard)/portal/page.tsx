@@ -28,6 +28,7 @@ export default function StaffPortalHomePage() {
   const [balances, setBalances] = useState<LeaveBalance[]>([]);
   const [requests, setRequests] = useState<LeaveRequest[]>([]);
   const [recentSlips, setRecentSlips] = useState<Payslip[]>([]);
+  const [ytdCompensation, setYtdCompensation] = useState<number>(0);
 
   useEffect(() => {
     if (user) {
@@ -41,6 +42,11 @@ export default function StaffPortalHomePage() {
         }
         setBalances(mockDb.getLeaveBalances(emp.id));
         setRequests(mockDb.getLeaveRequests().filter(r => r.employeeId === emp.id).slice(0, 2));
+        
+        // Calculate YTD compensation dynamically
+        const totalYtd = slips.reduce((acc, s) => acc + s.netPay, 0);
+        setYtdCompensation(totalYtd);
+        
         logAction('VIEW_PORTAL_DASHBOARD', 'EmployeeProfile', 'User loaded portal home styled in mockup aesthetic.');
       }
     }
@@ -109,7 +115,7 @@ export default function StaffPortalHomePage() {
           <div className="bg-gradient-to-tr from-violet-500 via-purple-600 to-indigo-600 text-white rounded-2xl p-5 shadow-[0_8px_30px_rgba(124,58,237,0.12)] relative overflow-hidden flex flex-col justify-between min-h-[110px]">
             <p className="text-[10px] font-black uppercase tracking-widest text-purple-200">YTD COMPENSATION</p>
             <h3 className="text-xl font-black font-mono tracking-tight">
-              ${lastPayslip ? (profile.baseSalary * 5).toLocaleString() : 'N/A'}
+              ₱{ytdCompensation > 0 ? ytdCompensation.toLocaleString() : 'N/A'}
             </h3>
             <div className="absolute right-0 bottom-0 translate-x-3 translate-y-3 opacity-10">
               <TrendingUp className="h-24 w-24" />
