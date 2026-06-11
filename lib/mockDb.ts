@@ -39,6 +39,7 @@ export interface EmployeeProfile {
   housingFundNo: string; // Pag-IBIG
   bankName: string;
   bankAccountNumber: string;
+  fingerprintId?: number; // Add optional mapping for IoT biometric sensor
 }
 
 export interface LeaveBalance {
@@ -366,6 +367,11 @@ const INITIAL_EMPLOYEES: EmployeeProfile[] = [
     bankAccountNumber: '3344556677'
   }
 ];
+
+// Assign fingerprintId to seed employees (Jane Doe = 1, John Smith = 2, etc.)
+INITIAL_EMPLOYEES.forEach((emp, index) => {
+  emp.fingerprintId = index + 1;
+});
 
 const INITIAL_LEAVE_BALANCES: LeaveBalance[] = [
   { id: 'lb-1', employeeId: 'emp-1', leaveType: 'VACATION', allocated: 15, used: 3, pending: 1 },
@@ -1434,6 +1440,26 @@ class MockDBStore {
   deleteAttendanceRecord(id: string): void {
     const list = this.getAttendanceRecords().filter(att => att.id !== id);
     this.set('attendance', list);
+  }
+
+  clockByFingerprintId(fingerprintId: number, timeStr?: string): AttendanceRecord {
+    const employees = this.getEmployees();
+    const emp = employees.find(e => e.fingerprintId === fingerprintId);
+    if (!emp) throw new Error(`Fingerprint ID ${fingerprintId} not enrolled`);
+
+    const todayRec = this.getTodayAttendanceRecord(emp.id);
+    if (!todayRec) {
+      // Clock In
+      return this.clockIn(emp.id, timeStr);
+    } else if (!todayRec.clockOut) {
+      // Clock Out
+      const updated = this.clockOut(emp.id, timeStr);
+      if (!updated) throw new Error('Failed to clock out');
+      return updated;
+    } else {
+      // Already shift completed, return the record
+      return todayRec;
+    }
   }
 }
 

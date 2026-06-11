@@ -19,7 +19,10 @@ import {
   CheckCircle,
   UserCheck,
   UserMinus,
-  AlertTriangle
+  AlertTriangle,
+  Cpu,
+  Wifi,
+  Fingerprint
 } from 'lucide-react';
 
 export default function HRAttendancePage() {
@@ -32,6 +35,47 @@ export default function HRAttendancePage() {
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [deptFilter, setDeptFilter] = useState<string>('ALL');
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
+
+  // IoT Simulator states
+  const [iotEmpId, setIotEmpId] = useState<string>('');
+  const [iotAlert, setIotAlert] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+
+  // Initialize first employee for selector
+  useEffect(() => {
+    if (employees.length > 0) {
+      setIotEmpId(employees[0].id);
+    }
+  }, [employees]);
+
+  const handleSimulateIot = () => {
+    const emp = employees.find(e => e.id === iotEmpId);
+    if (!emp) return;
+    
+    if (emp.fingerprintId === undefined) {
+      setIotAlert({ message: 'Selected employee has no Fingerprint ID assigned.', type: 'error' });
+      return;
+    }
+
+    try {
+      const record = mockDb.clockByFingerprintId(emp.fingerprintId);
+      setIotAlert({
+        message: `[ESP32 Webhook] ${record.employeeName} ${
+          record.clockOut ? 'Clocked Out' : 'Clocked In'
+        } successfully! Registered Fingerprint ID #${emp.fingerprintId}`,
+        type: 'success'
+      });
+      setLogs(mockDb.getAttendanceRecords());
+      logAction(
+        'IOT_FINGERPRINT_WEBHOOK_SIMULATED', 
+        'AttendanceRecord', 
+        `Simulated IoT scan for ${record.employeeName} (Finger ID: ${emp.fingerprintId})`
+      );
+      setTimeout(() => setIotAlert(null), 4000);
+    } catch (err: any) {
+      setIotAlert({ message: `Scan error: ${err.message}`, type: 'error' });
+      setTimeout(() => setIotAlert(null), 4000);
+    }
+  };
 
   // Modal edit states
   const [editingRecord, setEditingRecord] = useState<AttendanceRecord | null>(null);
@@ -292,145 +336,216 @@ export default function HRAttendancePage() {
         </div>
       </div>
 
-      {/* Main Table Card */}
-      <div className="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm space-y-4">
+      {/* Grid: Attendance Logs & IoT Simulation Console */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
-        {/* Filters Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-50 pb-4">
-          <h3 className="text-sm font-black text-slate-800 tracking-tight">Attendance Register</h3>
+        {/* Left Side: Attendance Register Table */}
+        <div className="lg:col-span-2 bg-white border border-slate-100 rounded-2xl p-6 shadow-sm space-y-4">
           
-          <div className="flex flex-wrap items-center gap-3 text-xs font-bold text-slate-700">
-            {/* Search */}
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Search staff name or code..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="bg-slate-50 border border-slate-200 rounded-xl py-1.5 pl-8 pr-3 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500 text-slate-700 w-[180px] shadow-sm font-semibold"
-              />
-              <Search className="h-3.5 w-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
-            </div>
+          {/* Filters Header */}
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-50 pb-4">
+            <h3 className="text-sm font-black text-slate-800 tracking-tight">Attendance Register</h3>
+            
+            <div className="flex flex-wrap items-center gap-3 text-xs font-bold text-slate-700">
+              {/* Search */}
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Search staff name or code..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="bg-slate-50 border border-slate-200 rounded-xl py-1.5 pl-8 pr-3 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500 text-slate-700 w-[180px] shadow-sm font-semibold"
+                />
+                <Search className="h-3.5 w-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
+              </div>
 
-            {/* Department */}
-            <select
-              value={deptFilter}
-              onChange={(e) => setDeptFilter(e.target.value)}
-              className="bg-slate-50 border border-slate-200 rounded-xl py-1.5 px-3 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-indigo-500 text-slate-705 shadow-sm cursor-pointer"
-            >
-              <option value="ALL">All Departments</option>
-              {departments.map(d => (
-                <option key={d} value={d}>{d}</option>
-              ))}
-            </select>
-
-            {/* Status */}
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="bg-slate-50 border border-slate-200 rounded-xl py-1.5 px-3 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-indigo-500 text-slate-705 shadow-sm cursor-pointer"
-            >
-              <option value="ALL">All Statuses</option>
-              <option value="PRESENT">Present</option>
-              <option value="LATE">Late</option>
-              <option value="HALFDAY">Halfday</option>
-              <option value="ABSENT">Absent</option>
-            </select>
-
-            {/* Clear filters */}
-            {(searchTerm || deptFilter !== 'ALL' || statusFilter !== 'ALL') && (
-              <button
-                onClick={() => {
-                  setSearchTerm('');
-                  setDeptFilter('ALL');
-                  setStatusFilter('ALL');
-                }}
-                className="py-1.5 px-3 text-red-500 hover:bg-red-50 rounded-xl border border-red-200 cursor-pointer transition-all"
+              {/* Department */}
+              <select
+                value={deptFilter}
+                onChange={(e) => setDeptFilter(e.target.value)}
+                className="bg-slate-50 border border-slate-200 rounded-xl py-1.5 px-3 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-indigo-500 text-slate-705 shadow-sm cursor-pointer"
               >
-                Clear Filters
-              </button>
-            )}
+                <option value="ALL">All Departments</option>
+                {departments.map(d => (
+                  <option key={d} value={d}>{d}</option>
+                ))}
+              </select>
+
+              {/* Status */}
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="bg-slate-50 border border-slate-200 rounded-xl py-1.5 px-3 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-indigo-500 text-slate-705 shadow-sm cursor-pointer"
+              >
+                <option value="ALL">All Statuses</option>
+                <option value="PRESENT">Present</option>
+                <option value="LATE">Late</option>
+                <option value="HALFDAY">Halfday</option>
+                <option value="ABSENT">Absent</option>
+              </select>
+
+              {/* Clear filters */}
+              {(searchTerm || deptFilter !== 'ALL' || statusFilter !== 'ALL') && (
+                <button
+                  onClick={() => {
+                    setSearchTerm('');
+                    setDeptFilter('ALL');
+                    setStatusFilter('ALL');
+                  }}
+                  className="py-1.5 px-3 text-red-500 hover:bg-red-50 rounded-xl border border-red-200 cursor-pointer transition-all"
+                >
+                  Clear Filters
+                </button>
+              )}
+            </div>
           </div>
+
+          {/* Logs Table */}
+          <div className="overflow-x-auto text-xs">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="text-slate-400 font-bold border-b border-slate-50 pb-2">
+                  <th className="pb-2.5">Staff Name</th>
+                  <th className="pb-2.5">ID Code</th>
+                  <th className="pb-2.5">Department</th>
+                  <th className="pb-2.5">Clock In</th>
+                  <th className="pb-2.5">Clock Out</th>
+                  <th className="pb-2.5 text-center">Overtime</th>
+                  <th className="pb-2.5">Status</th>
+                  <th className="pb-2.5">IP Address</th>
+                  <th className="pb-2.5 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-50 text-slate-600 font-semibold">
+                {filteredLogs.length > 0 ? (
+                  filteredLogs.map((log) => {
+                    const otHours = log.overtimeMinutes 
+                      ? `${Math.floor(log.overtimeMinutes / 60)}h ${log.overtimeMinutes % 60}m`
+                      : '-';
+                    
+                    return (
+                      <tr key={log.id} className="hover:bg-slate-50/50 transition-colors">
+                        <td className="py-3.5 font-bold text-slate-800">
+                          {log.employeeName}
+                        </td>
+                        <td className="py-3.5 font-mono">{log.employeeIdCode}</td>
+                        <td className="py-3.5">{log.department}</td>
+                        <td className="py-3.5 font-mono">{log.clockIn || '-'}</td>
+                        <td className="py-3.5 font-mono">{log.clockOut || '-'}</td>
+                        <td className="py-3.5 text-center font-mono">{otHours}</td>
+                        <td className="py-3.5">
+                          <span className={`
+                            px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase border inline-flex items-center space-x-1
+                            ${log.status === 'PRESENT'
+                              ? 'bg-emerald-50 text-emerald-600 border-emerald-100'
+                              : log.status === 'LATE'
+                              ? 'bg-amber-50 text-amber-600 border-amber-100'
+                              : log.status === 'HALFDAY'
+                              ? 'bg-purple-50 text-purple-600 border-purple-100'
+                              : 'bg-rose-50 text-rose-600 border-rose-100'
+                            }
+                          `}>
+                            <span>{log.status}</span>
+                          </span>
+                        </td>
+                        <td className="py-3.5 font-mono text-slate-400">{log.ipAddress || '-'}</td>
+                        <td className="py-3.5 text-right flex items-center justify-end space-x-2.5">
+                          <button
+                            onClick={() => handleEditOpen(log)}
+                            className="p-1 hover:text-indigo-600 hover:bg-indigo-50 border border-transparent hover:border-indigo-100 rounded-lg transition-colors cursor-pointer"
+                            title="Edit Override"
+                          >
+                            <Edit2 className="h-3.5 w-3.5" />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteLog(log.id)}
+                            className="p-1 hover:text-rose-500 hover:bg-rose-50 border border-transparent hover:border-rose-100 rounded-lg transition-colors cursor-pointer"
+                            title="Delete Log"
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })
+                ) : (
+                  <tr>
+                    <td colSpan={9} className="text-center py-12 text-slate-400 font-bold space-y-2">
+                      <AlertCircle className="h-8 w-8 text-slate-200 mx-auto" />
+                      <p>No active attendance logs matching the filters for this date.</p>
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+
         </div>
 
-        {/* Logs Table */}
-        <div className="overflow-x-auto text-xs">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="text-slate-400 font-bold border-b border-slate-50 pb-2">
-                <th className="pb-2.5">Staff Name</th>
-                <th className="pb-2.5">ID Code</th>
-                <th className="pb-2.5">Department</th>
-                <th className="pb-2.5">Clock In</th>
-                <th className="pb-2.5">Clock Out</th>
-                <th className="pb-2.5 text-center">Overtime</th>
-                <th className="pb-2.5">Status</th>
-                <th className="pb-2.5">IP Address</th>
-                <th className="pb-2.5 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-50 text-slate-600 font-semibold">
-              {filteredLogs.length > 0 ? (
-                filteredLogs.map((log) => {
-                  const otHours = log.overtimeMinutes 
-                    ? `${Math.floor(log.overtimeMinutes / 60)}h ${log.overtimeMinutes % 60}m`
-                    : '-';
-                  
-                  return (
-                    <tr key={log.id} className="hover:bg-slate-50/50 transition-colors">
-                      <td className="py-3.5 font-bold text-slate-800">
-                        {log.employeeName}
-                      </td>
-                      <td className="py-3.5 font-mono">{log.employeeIdCode}</td>
-                      <td className="py-3.5">{log.department}</td>
-                      <td className="py-3.5 font-mono">{log.clockIn || '-'}</td>
-                      <td className="py-3.5 font-mono">{log.clockOut || '-'}</td>
-                      <td className="py-3.5 text-center font-mono">{otHours}</td>
-                      <td className="py-3.5">
-                        <span className={`
-                          px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase border inline-flex items-center space-x-1
-                          ${log.status === 'PRESENT'
-                            ? 'bg-emerald-50 text-emerald-600 border-emerald-100'
-                            : log.status === 'LATE'
-                            ? 'bg-amber-50 text-amber-600 border-amber-100'
-                            : log.status === 'HALFDAY'
-                            ? 'bg-purple-50 text-purple-600 border-purple-100'
-                            : 'bg-rose-50 text-rose-600 border-rose-100'
-                          }
-                        `}>
-                          <span>{log.status}</span>
-                        </span>
-                      </td>
-                      <td className="py-3.5 font-mono text-slate-400">{log.ipAddress || '-'}</td>
-                      <td className="py-3.5 text-right flex items-center justify-end space-x-2.5">
-                        <button
-                          onClick={() => handleEditOpen(log)}
-                          className="p-1 hover:text-indigo-600 hover:bg-indigo-50 border border-transparent hover:border-indigo-100 rounded-lg transition-colors cursor-pointer"
-                          title="Edit Override"
-                        >
-                          <Edit2 className="h-3.5 w-3.5" />
-                        </button>
-                        <button
-                          onClick={() => handleDeleteLog(log.id)}
-                          className="p-1 hover:text-rose-500 hover:bg-rose-50 border border-transparent hover:border-rose-100 rounded-lg transition-colors cursor-pointer"
-                          title="Delete Log"
-                        >
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                })
-              ) : (
-                <tr>
-                  <td colSpan={9} className="text-center py-12 text-slate-400 font-bold space-y-2">
-                    <AlertCircle className="h-8 w-8 text-slate-200 mx-auto" />
-                    <p>No active attendance logs matching the filters for this date.</p>
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+        {/* Right Side: IoT Device Webhook Simulator */}
+        <div className="lg:col-span-1 space-y-6">
+          
+          {/* IoT Controller Simulator Card */}
+          <div className="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm space-y-4 relative overflow-hidden">
+            <div className="absolute top-0 left-0 right-0 h-1 bg-indigo-500"></div>
+            
+            <div className="flex items-center space-x-2 border-b border-slate-50 pb-3">
+              <Cpu className="h-5 w-5 text-indigo-500" />
+              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700">IoT Hardware Control</h3>
+            </div>
+
+            <p className="text-[10px] text-slate-400 font-semibold leading-relaxed">
+              Interfacing with physical ESP32 or ESP8266 Wi-Fi microcontrollers. Enrolling fingerprints maps a biometric signature to an enrolled Fingerprint ID.
+            </p>
+
+            {/* Alert banner */}
+            {iotAlert && (
+              <div className={`p-3 rounded-xl border text-[10px] font-bold leading-normal flex items-start gap-1.5 ${
+                iotAlert.type === 'success' 
+                  ? 'bg-emerald-50 text-emerald-600 border-emerald-100' 
+                  : 'bg-rose-50 text-rose-700 border-rose-100'
+              }`}>
+                <Wifi className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5 animate-pulse" />
+                <span>{iotAlert.message}</span>
+              </div>
+            )}
+
+            <div className="space-y-4 pt-1">
+              <div>
+                <label className="block text-[9px] text-slate-400 mb-1.5 uppercase tracking-wider">Select Device Enrollment</label>
+                <select
+                  value={iotEmpId}
+                  onChange={(e) => setIotEmpId(e.target.value)}
+                  className="w-full bg-slate-50 border border-slate-200 focus:border-indigo-500 focus:bg-white rounded-xl py-2 px-3 text-xs focus:outline-none text-slate-805 cursor-pointer font-bold transition-all"
+                >
+                  {employees.map(emp => (
+                    <option key={emp.id} value={emp.id}>
+                      {emp.firstName} {emp.lastName} (Finger ID #{emp.fingerprintId || 'N/A'})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <button
+                onClick={handleSimulateIot}
+                className="w-full py-2.5 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-black tracking-wider shadow-sm flex items-center justify-center space-x-2 transition-all cursor-pointer"
+              >
+                <Fingerprint className="h-4 w-4 text-emerald-400 animate-pulse" />
+                <span>SIMULATE ESP32 WEBHOOK</span>
+              </button>
+            </div>
+
+            <div className="bg-slate-50 border border-slate-100 rounded-xl p-3 text-[9px] text-slate-400 space-y-1 font-semibold leading-relaxed">
+              <strong className="text-slate-650 block mb-1">Expected HTTP JSON Payload:</strong>
+              <div className="bg-slate-950/5 p-2 rounded font-mono text-slate-600 border border-slate-200/50">
+                POST /api/iot/fingerprint<br/>
+                Header: "Content-Type: application/json"<br/>
+                Body: &#123; "fingerprintId": 2, "secretKey": "HR_SYSTEM_IOT_SECRET" &#125;
+              </div>
+            </div>
+
+          </div>
+
         </div>
 
       </div>
