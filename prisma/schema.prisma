@@ -1,0 +1,194 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  ADMIN
+  HR
+  PAYROLL_OFFICER
+  STAFF
+}
+
+enum EmploymentStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+  TERMINATED
+}
+
+enum EmploymentType {
+  FULL_TIME
+  PART_TIME
+  CONTRACTOR
+  PROBATIONARY
+}
+
+enum LeaveType {
+  VACATION
+  SICK
+  EMERGENCY
+  PARENTHOOD
+  UNPAID
+}
+
+enum LeaveStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum PayrollStatus {
+  DRAFT
+  APPROVED
+  PAID
+  CANCELLED
+}
+
+enum PayslipStatus {
+  DRAFT
+  ISSUED
+  PAID
+}
+
+model User {
+  id           String    @id @default(uuid())
+  email        String    @unique
+  passwordHash String
+  role         Role      @default(STAFF)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  
+  employee     EmployeeProfile?
+  auditLogs    AuditLog[]
+}
+
+model EmployeeProfile {
+  id                  String           @id @default(uuid())
+  userId              String?          @unique
+  user                User?            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  employeeId          String           @unique // e.g. EMP-2026-0001
+  firstName           String
+  lastName            String
+  middleName          String?
+  personalEmail       String           @unique
+  phone               String
+  dateOfBirth         DateTime
+  gender              String
+  address             String
+  
+  // Employment Details
+  jobTitle            String
+  department          String
+  dateHired           DateTime
+  employmentStatus    EmploymentStatus @default(ACTIVE)
+  employmentType      EmploymentType   @default(FULL_TIME)
+  baseSalary          Decimal          // Hourly or monthly base
+  
+  // Government IDs & Bank Details
+  taxIdNumber         String?          // e.g. TIN
+  socialSecurityNo    String?          // e.g. SSS
+  healthInsuranceNo   String?          // e.g. PhilHealth
+  housingFundNo       String?          // e.g. Pag-IBIG
+  bankName            String?
+  bankAccountNumber   String?
+
+  // Relations
+  leaveBalances       LeaveBalance[]
+  leaveRequests       LeaveRequest[]   @relation("EmployeeLeave")
+  approvedLeaves      LeaveRequest[]   @relation("ApproverLeave")
+  payslips            Payslip[]
+  
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
+}
+
+model LeaveBalance {
+  id           String          @id @default(uuid())
+  employeeId   String
+  employee     EmployeeProfile @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  leaveType    LeaveType
+  allocated    Decimal         @default(0.0)
+  used         Decimal         @default(0.0)
+  pending      Decimal         @default(0.0)
+
+  @@unique([employeeId, leaveType])
+}
+
+model LeaveRequest {
+  id           String          @id @default(uuid())
+  employeeId   String
+  employee     EmployeeProfile @relation("EmployeeLeave", fields: [employeeId], references: [id], onDelete: Cascade)
+  leaveType    LeaveType
+  startDate    DateTime
+  endDate      DateTime
+  reason       String
+  status       LeaveStatus     @default(PENDING)
+  
+  approvedById String?
+  approvedBy   EmployeeProfile? @relation("ApproverLeave", fields: [approvedById], references: [id])
+  rejectionReason String?
+  
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+}
+
+model PayrollRun {
+  id           String          @id @default(uuid())
+  name         String          // e.g. "June 2026 First Half"
+  startDate    DateTime
+  endDate      DateTime
+  paymentDate  DateTime
+  status       PayrollStatus   @default(DRAFT)
+  
+  totalGrossPay Decimal        @default(0.0)
+  totalNetPay   Decimal        @default(0.0)
+  totalDeductions Decimal      @default(0.0)
+  
+  payslips     Payslip[]
+  
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+}
+
+model Payslip {
+  id             String          @id @default(uuid())
+  payrollRunId   String
+  payrollRun     PayrollRun      @relation(fields: [payrollRunId], references: [id], onDelete: Cascade)
+  employeeId     String
+  employee       EmployeeProfile @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  
+  baseSalary      Decimal
+  overtimePay     Decimal         @default(0.0)
+  allowances      Json            // Array of allowances [{ name: string, amount: number }]
+  grossPay        Decimal
+  
+  taxWithheld     Decimal         @default(0.0)
+  statutoryDeductions Json         // Array of deductions [{ name: string, amount: number }]
+  otherDeductions Json             // Array of deductions [{ name: string, amount: number }]
+  totalDeductions Decimal
+  
+  netPay          Decimal
+  status          PayslipStatus   @default(DRAFT)
+  
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  @@unique([payrollRunId, employeeId])
+}
+
+model AuditLog {
+  id           String   @id @default(uuid())
+  userId       String?
+  user         User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  action       String   
+  resource     String   
+  details      String   
+  ipAddress    String?
+  createdAt    DateTime @default(now())
+}

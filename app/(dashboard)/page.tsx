@@ -1,11 +1,11 @@
-// app/page.tsx
+// app/(dashboard)/page.tsx
 'use client';
 
 import { useEffect } from 'react';
 import { useAuth } from '@/components/providers/AuthProvider';
 import { useRouter } from 'next/navigation';
 
-export default function Home() {
+export default function DashboardIndexPage() {
   const { user, isLoading } = useAuth();
   const router = useRouter();
 
@@ -14,7 +14,7 @@ export default function Home() {
       if (!user) {
         router.replace('/login');
       } else {
-        // Redirect based on user role
+        // Redirect to appropriate role space
         switch (user.role) {
           case 'STAFF':
             router.replace('/portal');
@@ -36,7 +36,7 @@ export default function Home() {
   }, [user, isLoading, router]);
 
   return (
-    <div className="min-h-screen bg-zinc-950 flex flex-col items-center justify-center">
+    <div className="min-h-[60vh] flex flex-col items-center justify-center">
       <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-emerald-500"></div>
     </div>
   );
