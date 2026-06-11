@@ -16,7 +16,9 @@ import {
   LayoutDashboard,
   Shield,
   ArrowRight,
-  Clock
+  Clock,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -26,6 +28,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const pathname = usePathname();
   const router = useRouter();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
@@ -177,40 +180,89 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
       {/* Sidebar Navigation (Hidden on Print) */}
       <aside className={`
-        fixed inset-y-0 left-0 z-50 w-64 bg-white p-6 flex flex-col justify-between border-r border-slate-100/80 transform transition-transform duration-300 ease-in-out md:translate-x-0 md:static md:h-screen print:hidden shrink-0
+        fixed inset-y-0 left-0 z-50 bg-white flex flex-col justify-between border-r border-slate-100/80 transform transition-transform duration-300 ease-in-out md:translate-x-0 md:static md:h-screen print:hidden shrink-0 transition-all duration-300
         ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+        ${isCollapsed ? 'w-20 p-4' : 'w-64 p-6'}
       `}>
         <div className="flex flex-col gap-6">
           {/* Branding Logo */}
-          <div className="hidden md:flex items-center space-x-3 px-2 py-1">
-            <div className="p-2 bg-gradient-to-tr from-indigo-500 to-blue-500 rounded-xl shadow-md shadow-indigo-550/10">
-              <Shield className="h-5 w-5 text-white" />
+          <div className={`hidden md:flex items-center justify-between ${isCollapsed ? 'justify-center px-0' : 'px-2 py-1'}`}>
+            <div className="flex items-center space-x-3">
+              <div className="p-2 bg-gradient-to-tr from-indigo-500 to-blue-500 rounded-xl shadow-md shadow-indigo-550/10 shrink-0">
+                <Shield className="h-5 w-5 text-white" />
+              </div>
+              {!isCollapsed && (
+                <span className="font-black text-lg text-slate-800 tracking-wider">
+                  HR-SYSTEM
+                </span>
+              )}
             </div>
-            <span className="font-black text-lg text-slate-800 tracking-wider">
-              HR-SYSTEM
-            </span>
+            
+            {/* Desktop Collapse Toggle */}
+            {!isCollapsed && (
+              <button
+                onClick={() => setIsCollapsed(true)}
+                className="hidden md:flex p-1.5 hover:bg-slate-50 border border-slate-100 rounded-xl transition-all cursor-pointer text-slate-400 hover:text-indigo-600 active:scale-95"
+                title="Collapse Sidebar"
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </button>
+            )}
           </div>
+          
+          {isCollapsed && (
+            <div className="hidden md:flex justify-center -mt-2 mb-2">
+              <button
+                onClick={() => setIsCollapsed(false)}
+                className="p-1.5 hover:bg-slate-50 border border-slate-100 rounded-xl transition-all cursor-pointer text-slate-400 hover:text-indigo-600 active:scale-95"
+                title="Expand Sidebar"
+              >
+                <ChevronRight className="h-4 w-4" />
+              </button>
+            </div>
+          )}
 
           {/* Role Switcher Widget */}
-          <div className="p-3.5 bg-slate-50 border border-slate-100 rounded-2xl">
-            <div className="flex items-center gap-2 mb-2 text-[9px] font-bold text-slate-400 uppercase tracking-widest">
-              <ShieldAlert className="h-3.5 w-3.5 text-indigo-500" />
-              <span>Simulate Role</span>
-            </div>
-            <select
-              value={user.role}
-              onChange={handleRoleSwitch}
-              className="w-full bg-white border border-slate-200 rounded-xl text-xs py-2 px-2.5 focus:outline-none focus:ring-1 focus:ring-indigo-500 text-slate-700 font-bold cursor-pointer shadow-sm"
-            >
-              <option value="ADMIN">Administrator</option>
-              <option value="HR">HR Manager</option>
-              <option value="PAYROLL_OFFICER">Payroll Officer</option>
-              <option value="STAFF">Staff Employee</option>
-            </select>
+          <div className={isCollapsed ? "relative flex justify-center" : "p-3.5 bg-slate-50 border border-slate-100 rounded-2xl"}>
+            {!isCollapsed ? (
+              <>
+                <div className="flex items-center gap-2 mb-2 text-[9px] font-bold text-slate-400 uppercase tracking-widest">
+                  <ShieldAlert className="h-3.5 w-3.5 text-indigo-500" />
+                  <span>Simulate Role</span>
+                </div>
+                <select
+                  value={user.role}
+                  onChange={handleRoleSwitch}
+                  className="w-full bg-white border border-slate-200 rounded-xl text-xs py-2 px-2.5 focus:outline-none focus:ring-1 focus:ring-indigo-500 text-slate-700 font-bold cursor-pointer shadow-sm"
+                >
+                  <option value="ADMIN">Administrator</option>
+                  <option value="HR">HR Manager</option>
+                  <option value="PAYROLL_OFFICER">Payroll Officer</option>
+                  <option value="STAFF">Staff Employee</option>
+                </select>
+              </>
+            ) : (
+              <div className="relative group cursor-pointer">
+                <div className="w-10 h-10 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-500 group-hover:text-indigo-600 transition-colors" title="Simulate Role">
+                  <ShieldAlert className="h-5 w-5 text-indigo-500" />
+                </div>
+                <select
+                  value={user.role}
+                  onChange={handleRoleSwitch}
+                  title="Simulate Role"
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                >
+                  <option value="ADMIN">Administrator</option>
+                  <option value="HR">HR Manager</option>
+                  <option value="PAYROLL_OFFICER">Payroll Officer</option>
+                  <option value="STAFF">Staff Employee</option>
+                </select>
+              </div>
+            )}
           </div>
 
           {/* Navigation Links */}
-          <nav className="flex flex-col space-y-1.5 overflow-y-auto max-h-[50vh] pr-1">
+          <nav className={`flex flex-col space-y-1.5 overflow-y-auto max-h-[50vh] pr-1 ${isCollapsed ? 'items-center' : ''}`}>
             {navLinks.map((link) => {
               const Icon = link.icon;
               const isActive = link.path === '/portal' 
@@ -221,16 +273,21 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   key={link.path}
                   href={link.path}
                   onClick={() => setIsSidebarOpen(false)}
+                  title={isCollapsed ? link.name : undefined}
                   className={`
-                    flex items-center space-x-3.5 px-4 py-2.5 rounded-xl text-[11px] font-extrabold tracking-wider transition-all duration-200 group
+                    flex items-center transition-all duration-200 group
+                    ${isCollapsed 
+                      ? 'justify-center w-10 h-10 p-0 rounded-xl text-[11px] font-extrabold tracking-wider' 
+                      : 'space-x-3.5 px-4 py-2.5 w-full rounded-xl text-[11px] font-extrabold tracking-wider'
+                    }
                     ${isActive 
                       ? 'bg-indigo-50 text-indigo-600 shadow-sm border-l-4 border-indigo-500' 
                       : 'text-slate-400 hover:bg-slate-50 hover:text-slate-700'
                     }
                   `}
                 >
-                  <Icon className={`h-4 w-4 ${isActive ? 'text-indigo-600' : 'text-slate-400 group-hover:text-slate-600'}`} />
-                  <span>{link.name}</span>
+                  <Icon className={`h-4 w-4 shrink-0 ${isActive ? 'text-indigo-600' : 'text-slate-400 group-hover:text-slate-600'}`} />
+                  {!isCollapsed && <span>{link.name}</span>}
                 </Link>
               );
             })}
@@ -239,26 +296,47 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
         {/* User Profile Card */}
         <div className="flex flex-col gap-4 pt-4 border-t border-slate-100">
-          <div className="bg-slate-50 border border-slate-100 rounded-2xl p-4 flex flex-col items-center text-center shadow-sm relative overflow-hidden">
-            <div className="h-10 w-10 rounded-full bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center font-extrabold text-xs text-white shadow-inner mb-2 border-2 border-white">
-              {user.name.charAt(0)}
+          {!isCollapsed ? (
+            <div className="bg-slate-50 border border-slate-100 rounded-2xl p-4 flex flex-col items-center text-center shadow-sm relative overflow-hidden">
+              <div className="h-10 w-10 rounded-full bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center font-extrabold text-xs text-white shadow-inner mb-2 border-2 border-white">
+                {user.name.charAt(0)}
+              </div>
+              <h4 className="text-xs font-bold text-slate-800 truncate w-full">{user.name}</h4>
+              <span className="text-[8px] font-extrabold text-indigo-600 uppercase tracking-widest bg-indigo-50 px-2.5 py-0.5 rounded-full mt-1 border border-indigo-100/30">
+                {user.role === 'ADMIN' ? 'ADMINISTRATOR' : user.role.replace('_', ' ')}
+              </span>
+              
+              <button 
+                onClick={() => {
+                  logout();
+                  router.push('/login');
+                }}
+                className="mt-3 text-[9px] font-bold text-red-500 hover:text-red-650 uppercase tracking-wider flex items-center gap-1 cursor-pointer transition-colors"
+              >
+                <span>SIGN OUT</span>
+                <ArrowRight className="h-3 w-3" />
+              </button>
             </div>
-            <h4 className="text-xs font-bold text-slate-800 truncate w-full">{user.name}</h4>
-            <span className="text-[8px] font-extrabold text-indigo-600 uppercase tracking-widest bg-indigo-50 px-2.5 py-0.5 rounded-full mt-1 border border-indigo-100/30">
-              {user.role === 'ADMIN' ? 'ADMINISTRATOR' : user.role.replace('_', ' ')}
-            </span>
-            
-            <button 
-              onClick={() => {
-                logout();
-                router.push('/login');
-              }}
-              className="mt-3 text-[9px] font-bold text-red-500 hover:text-red-650 uppercase tracking-wider flex items-center gap-1 cursor-pointer transition-colors"
-            >
-              <span>SIGN OUT</span>
-              <ArrowRight className="h-3 w-3" />
-            </button>
-          </div>
+          ) : (
+            <div className="flex flex-col items-center gap-3">
+              <div 
+                title={`${user.name} (${user.role === 'ADMIN' ? 'ADMINISTRATOR' : user.role.replace('_', ' ')})`}
+                className="h-10 w-10 rounded-full bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center font-extrabold text-xs text-white shadow-inner border-2 border-white shrink-0"
+              >
+                {user.name.charAt(0)}
+              </div>
+              <button 
+                onClick={() => {
+                  logout();
+                  router.push('/login');
+                }}
+                title="Sign Out"
+                className="p-2 bg-rose-50 hover:bg-rose-500 text-rose-600 hover:text-white border border-rose-100 rounded-xl transition-all cursor-pointer shadow-sm active:scale-95 flex items-center justify-center"
+              >
+                <LogOut className="h-4 w-4" />
+              </button>
+            </div>
+          )}
         </div>
       </aside>
 
