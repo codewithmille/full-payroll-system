@@ -220,17 +220,17 @@ export default function PayrollRunDetailPage({ params }: PageProps) {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm">
           <p className="text-slate-400 text-[10px] font-bold uppercase tracking-wider">Gross Payroll</p>
-          <h3 className="text-lg font-black text-slate-800 mt-1 font-mono">${Number(run.totalGrossPay).toLocaleString()}</h3>
+          <h3 className="text-lg font-black text-slate-800 mt-1 font-mono">₱{Number(run.totalGrossPay).toLocaleString()}</h3>
         </div>
 
         <div className="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm">
           <p className="text-slate-400 text-[10px] font-bold uppercase tracking-wider">Total Deductions</p>
-          <h3 className="text-lg font-black text-rose-500 mt-1 font-mono">${Number(run.totalDeductions).toLocaleString()}</h3>
+          <h3 className="text-lg font-black text-rose-500 mt-1 font-mono">₱{Number(run.totalDeductions).toLocaleString()}</h3>
         </div>
 
         <div className="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm">
           <p className="text-[10px] font-bold uppercase tracking-wider text-emerald-600">Total Net Payout</p>
-          <h3 className="text-lg font-black text-emerald-600 mt-1 font-mono">${Number(run.totalNetPay).toLocaleString()}</h3>
+          <h3 className="text-lg font-black text-emerald-600 mt-1 font-mono">₱{Number(run.totalNetPay).toLocaleString()}</h3>
         </div>
       </div>
 
@@ -272,11 +272,11 @@ export default function PayrollRunDetailPage({ params }: PageProps) {
                       <div>{ps.jobTitle}</div>
                       <div className="text-[10px] text-slate-400 font-semibold">{ps.department}</div>
                     </td>
-                    <td className="py-4.5 px-6 font-mono font-bold">${Number(ps.baseSalary).toLocaleString()}</td>
-                    <td className="py-4.5 px-6 font-mono text-slate-400">${Number(ps.overtimePay).toLocaleString()}</td>
-                    <td className="py-4.5 px-6 font-mono text-emerald-600">${totalAllowances.toLocaleString()}</td>
-                    <td className="py-4.5 px-6 font-mono text-rose-500">${Number(ps.totalDeductions).toLocaleString()}</td>
-                    <td className="py-4.5 px-6 font-mono font-bold text-slate-800">${Number(ps.netPay).toLocaleString()}</td>
+                    <td className="py-4.5 px-6 font-mono font-bold">₱{Number(ps.baseSalary).toLocaleString()}</td>
+                    <td className="py-4.5 px-6 font-mono text-slate-400">₱{Number(ps.overtimePay).toLocaleString()}</td>
+                    <td className="py-4.5 px-6 font-mono text-emerald-600">₱{totalAllowances.toLocaleString()}</td>
+                    <td className="py-4.5 px-6 font-mono text-rose-500">₱{Number(ps.totalDeductions).toLocaleString()}</td>
+                    <td className="py-4.5 px-6 font-mono font-bold text-slate-800">₱{Number(ps.netPay).toLocaleString()}</td>
                     {run.status === 'DRAFT' && (
                       <td className="py-4.5 px-6 text-right">
                         <button
@@ -368,7 +368,7 @@ export default function PayrollRunDetailPage({ params }: PageProps) {
                         <div key={idx} className="flex justify-between items-center bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs">
                           <span className="text-slate-600">{al.name}</span>
                           <div className="flex items-center space-x-2">
-                            <span className="font-mono text-emerald-600 font-bold">+${al.amount}</span>
+                            <span className="font-mono text-emerald-600 font-bold">+₱{al.amount}</span>
                             <button
                               type="button"
                               onClick={() => handleRemoveAllowance(idx)}
@@ -435,7 +435,7 @@ export default function PayrollRunDetailPage({ params }: PageProps) {
                         <div key={idx} className="flex justify-between items-center bg-slate-55 bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs">
                           <span className="text-slate-600">{ded.name}</span>
                           <div className="flex items-center space-x-2">
-                            <span className="font-mono text-rose-600 font-bold">-${ded.amount}</span>
+                            <span className="font-mono text-rose-600 font-bold">-₱{ded.amount}</span>
                             <button
                               type="button"
                               onClick={() => handleRemoveDeduction(idx)}

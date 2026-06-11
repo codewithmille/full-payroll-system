@@ -170,24 +170,24 @@ export default function PayslipDetailPage({ params }: PageProps) {
             <div className="space-y-2 text-xs font-semibold">
               <div className="flex justify-between py-2 border-b border-slate-100/70 print:border-zinc-100">
                 <span className="text-slate-600 print:text-zinc-600">Basic Monthly Rate</span>
-                <span className="font-mono text-slate-800 print:text-zinc-900">${Number(payslip.baseSalary).toLocaleString()}</span>
+                <span className="font-mono text-slate-800 print:text-zinc-900">₱{Number(payslip.baseSalary).toLocaleString()}</span>
               </div>
               <div className="flex justify-between py-2 border-b border-slate-100/70 print:border-zinc-100">
                 <span className="text-slate-600 print:text-zinc-600">Overtime Payout</span>
-                <span className="font-mono text-slate-800 print:text-zinc-900">${Number(payslip.overtimePay).toLocaleString()}</span>
+                <span className="font-mono text-slate-800 print:text-zinc-900">₱{Number(payslip.overtimePay).toLocaleString()}</span>
               </div>
               
               {/* Allowances list */}
               {payslip.allowances.map((al, idx) => (
                 <div key={idx} className="flex justify-between py-2 border-b border-slate-100/70 print:border-zinc-100">
                   <span className="text-slate-600 print:text-zinc-600">{al.name}</span>
-                  <span className="font-mono text-emerald-700 print:text-emerald-700 font-bold">+${al.amount.toLocaleString()}</span>
+                  <span className="font-mono text-emerald-700 print:text-emerald-700 font-bold">+₱{al.amount.toLocaleString()}</span>
                 </div>
               ))}
 
               <div className="flex justify-between py-3 border-t border-slate-200 print:border-zinc-200 font-black text-xs text-slate-800 uppercase tracking-wider">
                 <span>Total Gross Income</span>
-                <span className="font-mono text-slate-900 print:text-zinc-900 text-sm">${grossPay.toLocaleString()}</span>
+                <span className="font-mono text-slate-900 print:text-zinc-900 text-sm">₱{grossPay.toLocaleString()}</span>
               </div>
             </div>
           </div>
@@ -201,14 +201,14 @@ export default function PayslipDetailPage({ params }: PageProps) {
             <div className="space-y-2 text-xs font-semibold">
               <div className="flex justify-between py-2 border-b border-slate-100/70 print:border-zinc-100">
                 <span className="text-slate-600 print:text-zinc-600">Withholding Income Tax</span>
-                <span className="font-mono text-slate-800 print:text-zinc-900">-${Number(payslip.taxWithheld).toLocaleString()}</span>
+                <span className="font-mono text-slate-800 print:text-zinc-900">-₱{Number(payslip.taxWithheld).toLocaleString()}</span>
               </div>
 
               {/* Statutory list */}
               {payslip.statutoryDeductions.map((sd, idx) => (
                 <div key={idx} className="flex justify-between py-2 border-b border-slate-100/70 print:border-zinc-100">
                   <span className="text-slate-600 print:text-zinc-600">{sd.name}</span>
-                  <span className="font-mono text-rose-600 print:text-red-700 font-bold">-${sd.amount.toLocaleString()}</span>
+                  <span className="font-mono text-rose-600 print:text-red-700 font-bold">-₱{sd.amount.toLocaleString()}</span>
                 </div>
               ))}
 
@@ -216,13 +216,13 @@ export default function PayslipDetailPage({ params }: PageProps) {
               {payslip.otherDeductions.map((od, idx) => (
                 <div key={idx} className="flex justify-between py-2 border-b border-slate-100/70 print:border-zinc-100">
                   <span className="text-slate-600 print:text-zinc-600">{od.name}</span>
-                  <span className="font-mono text-rose-600 print:text-red-700 font-bold">-${od.amount.toLocaleString()}</span>
+                  <span className="font-mono text-rose-600 print:text-red-700 font-bold">-₱{od.amount.toLocaleString()}</span>
                 </div>
               ))}
 
               <div className="flex justify-between py-3 border-t border-slate-200 print:border-zinc-200 font-black text-xs text-slate-800 uppercase tracking-wider">
                 <span>Total Deductions</span>
-                <span className="font-mono text-rose-600 print:text-red-750 text-sm">-${Number(payslip.totalDeductions).toLocaleString()}</span>
+                <span className="font-mono text-rose-600 print:text-red-750 text-sm">-₱{Number(payslip.totalDeductions).toLocaleString()}</span>
               </div>
             </div>
           </div>

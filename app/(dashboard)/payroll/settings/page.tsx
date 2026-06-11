@@ -42,11 +42,11 @@ export default function PayrollSettingsPage() {
                 <div className="bg-slate-50 border border-slate-200/50 rounded-xl p-3 text-xs space-y-1 font-bold">
                   <span className="text-slate-400 font-extrabold uppercase text-[9px]">Health Insurance Rate</span>
                   <p className="text-sm font-black text-slate-805 text-slate-800 font-mono">2.00%</p>
-                  <p className="text-[9px] text-slate-400 font-semibold">Capped at $600 per month</p>
+                  <p className="text-[9px] text-slate-400 font-semibold">Capped at ₱600 per month</p>
                 </div>
                 <div className="bg-slate-50 border border-slate-200/50 rounded-xl p-3 text-xs space-y-1 font-bold">
                   <span className="text-slate-400 font-extrabold uppercase text-[9px]">Housing Mutual Fund</span>
-                  <p className="text-sm font-black text-slate-805 text-slate-800 font-mono">$200.00</p>
+                  <p className="text-sm font-black text-slate-805 text-slate-800 font-mono">₱200.00</p>
                   <p className="text-[9px] text-slate-400 font-semibold">Flat rate contribution</p>
                 </div>
               </div>
@@ -71,24 +71,24 @@ export default function PayrollSettingsPage() {
                 </thead>
                 <tbody className="divide-y divide-slate-100/60 text-slate-600 font-semibold">
                   <tr>
-                    <td className="py-2.5">Up to $40,000</td>
+                    <td className="py-2.5">Up to ₱40,000</td>
                     <td className="py-2.5">10%</td>
-                    <td className="py-2.5 text-right font-mono font-bold">$0</td>
+                    <td className="py-2.5 text-right font-mono font-bold">₱0</td>
                   </tr>
                   <tr>
-                    <td className="py-2.5">$40,001 to $70,000</td>
+                    <td className="py-2.5">₱40,001 to ₱70,000</td>
                     <td className="py-2.5">12%</td>
-                    <td className="py-2.5 text-right font-mono font-bold">$2,000</td>
+                    <td className="py-2.5 text-right font-mono font-bold">₱2,000</td>
                   </tr>
                   <tr>
-                    <td className="py-2.5">$70,001 to $90,000</td>
+                    <td className="py-2.5">₱70,001 to ₱90,000</td>
                     <td className="py-2.5">18%</td>
-                    <td className="py-2.5 text-right font-mono font-bold">$5,600</td>
+                    <td className="py-2.5 text-right font-mono font-bold">₱5,600</td>
                   </tr>
                   <tr>
-                    <td className="py-2.5">Above $90,000</td>
+                    <td className="py-2.5">Above ₱90,000</td>
                     <td className="py-2.5">22%</td>
-                    <td className="py-2.5 text-right font-mono font-bold">$9,200</td>
+                    <td className="py-2.5 text-right font-mono font-bold">₱9,200</td>
                   </tr>
                 </tbody>
               </table>

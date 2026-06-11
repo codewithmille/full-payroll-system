@@ -51,7 +51,7 @@ export default function NewEmployeePage() {
     const year = new Date().getFullYear();
     const count = mockDb.getEmployees().length + 1;
     const paddedCount = String(count).padStart(4, '0');
-    const employeeIdCode = `EMP-${year}-${paddedCount}`;
+    const employeeIdCode = `EMP-₱{year}-₱{paddedCount}`;
 
     const created = mockDb.saveEmployee({
       ...formData,

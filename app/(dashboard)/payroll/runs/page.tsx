@@ -85,7 +85,7 @@ export default function PayrollRunsPage() {
           </div>
           <div>
             <p className="text-slate-400 text-[10px] font-bold uppercase tracking-wider">Total Paid (YTD)</p>
-            <h3 className="text-lg font-black text-slate-800 mt-0.5">${totalExpenses.toLocaleString()}</h3>
+            <h3 className="text-lg font-black text-slate-800 mt-0.5">₱{totalExpenses.toLocaleString()}</h3>
           </div>
         </div>
 
@@ -139,8 +139,8 @@ export default function PayrollRunsPage() {
                     </div>
                   </td>
                   <td className="py-4.5 px-6 text-slate-500 font-semibold">{run.paymentDate}</td>
-                  <td className="py-4.5 px-6 font-mono font-bold">${Number(run.totalGrossPay).toLocaleString()}</td>
-                  <td className="py-4.5 px-6 font-mono font-bold text-emerald-600">${Number(run.totalNetPay).toLocaleString()}</td>
+                  <td className="py-4.5 px-6 font-mono font-bold">₱{Number(run.totalGrossPay).toLocaleString()}</td>
+                  <td className="py-4.5 px-6 font-mono font-bold text-emerald-600">₱{Number(run.totalNetPay).toLocaleString()}</td>
                   <td className="py-4.5 px-6">
                     <span className={`
                       inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-extrabold tracking-wider uppercase border

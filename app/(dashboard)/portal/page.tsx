@@ -92,7 +92,7 @@ export default function StaffPortalHomePage() {
           
           <div className="bg-gradient-to-tr from-indigo-500 via-indigo-600 to-purple-600 text-white rounded-2xl p-5 shadow-[0_8px_30px_rgba(99,102,241,0.12)] relative overflow-hidden flex flex-col justify-between min-h-[110px]">
             <p className="text-[10px] font-black uppercase tracking-widest text-indigo-200">BASE MONTHLY PAY</p>
-            <h3 className="text-xl font-black font-mono tracking-tight">${profile.baseSalary.toLocaleString()}</h3>
+            <h3 className="text-xl font-black font-mono tracking-tight">₱{profile.baseSalary.toLocaleString()}</h3>
             <div className="absolute right-0 bottom-0 translate-x-3 translate-y-3 opacity-10">
               <CreditCard className="h-24 w-24" />
             </div>
@@ -180,9 +180,9 @@ export default function StaffPortalHomePage() {
                 {recentSlips.map((ps) => (
                   <tr key={ps.id} className="hover:bg-slate-50/50 transition-colors">
                     <td className="py-3 font-bold text-slate-800">#{ps.id.substring(0, 8).toUpperCase()}</td>
-                    <td className="py-3 font-mono">${ps.baseSalary.toLocaleString()}</td>
-                    <td className="py-3 font-mono text-slate-400">${ps.taxWithheld.toLocaleString()}</td>
-                    <td className="py-3 font-mono text-slate-800">${ps.netPay.toLocaleString()}</td>
+                    <td className="py-3 font-mono">₱{ps.baseSalary.toLocaleString()}</td>
+                    <td className="py-3 font-mono text-slate-400">₱{ps.taxWithheld.toLocaleString()}</td>
+                    <td className="py-3 font-mono text-slate-800">₱{ps.netPay.toLocaleString()}</td>
                     <td className="py-3 text-right">
                       <span className={`
                         px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase border

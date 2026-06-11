@@ -98,13 +98,13 @@ export default function StaffPayslipsPage() {
                       </td>
                       <td className="py-4.5 px-6 font-mono text-slate-500">
                         <div className="flex flex-col leading-normal font-bold">
-                          <span>Base: ${Number(ps.baseSalary).toLocaleString()}</span>
-                          {allowancesSum > 0 && <span className="text-[10px] text-emerald-600 font-extrabold">+Allowances: ${allowancesSum.toLocaleString()}</span>}
+                          <span>Base: ₱{Number(ps.baseSalary).toLocaleString()}</span>
+                          {allowancesSum > 0 && <span className="text-[10px] text-emerald-600 font-extrabold">+Allowances: ₱{allowancesSum.toLocaleString()}</span>}
                         </div>
                       </td>
-                      <td className="py-4.5 px-6 font-mono font-bold text-slate-500">${Number(ps.taxWithheld).toLocaleString()}</td>
-                      <td className="py-4.5 px-6 font-mono font-bold text-rose-500">-${Number(ps.totalDeductions).toLocaleString()}</td>
-                      <td className="py-4.5 px-6 font-mono font-bold text-emerald-600">${Number(ps.netPay).toLocaleString()}</td>
+                      <td className="py-4.5 px-6 font-mono font-bold text-slate-500">₱{Number(ps.taxWithheld).toLocaleString()}</td>
+                      <td className="py-4.5 px-6 font-mono font-bold text-rose-500">-₱{Number(ps.totalDeductions).toLocaleString()}</td>
+                      <td className="py-4.5 px-6 font-mono font-bold text-emerald-600">₱{Number(ps.netPay).toLocaleString()}</td>
                       <td className="py-4.5 px-6">
                         <span className={`
                           inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase border
