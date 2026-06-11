@@ -19,15 +19,7 @@ export default function LoginPage() {
   }, [user]);
 
   const redirectToRoleDashboard = (role: string) => {
-    if (role === 'STAFF') {
-      router.replace('/portal');
-    } else if (role === 'HR') {
-      router.replace('/hr/employees');
-    } else if (role === 'PAYROLL_OFFICER') {
-      router.replace('/payroll/runs');
-    } else {
-      router.replace('/admin/users');
-    }
+    router.replace('/portal');
   };
 
   const handleLogin = async (e: React.FormEvent) => {
