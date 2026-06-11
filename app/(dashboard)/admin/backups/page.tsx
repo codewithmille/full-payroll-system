@@ -44,12 +44,18 @@ export default function AdminBackupsPage() {
   // Backup configurations
   const [autoEnabled, setAutoEnabled] = useState(false);
   const [frequency, setFrequency] = useState(300); // default 5 minutes (300s)
-  const [destination, setDestination] = useState<'server' | 'local' | 'both'>('server');
+  const [destination, setDestination] = useState<'server' | 'local' | 'gdrive' | 'all'>('server');
   
   // Backups lists
   const [serverBackups, setServerBackups] = useState<ServerBackup[]>([]);
   const [localBackups, setLocalBackups] = useState<any[]>([]);
-  const [activeTab, setActiveTab] = useState<'server' | 'local'>('server');
+  const [gdriveBackups, setGdriveBackups] = useState<any[]>([]);
+  const [activeTab, setActiveTab] = useState<'server' | 'local' | 'gdrive'>('server');
+
+  // GDrive Settings (Mocked for UI)
+  const [gdriveConnected, setGdriveConnected] = useState(false);
+  const [gdriveFolderId, setGdriveFolderId] = useState('');
+  const [isConnectingGDrive, setIsConnectingGDrive] = useState(false);
 
   // UI state
   const [isBackingUp, setIsBackingUp] = useState(false);
@@ -145,14 +151,18 @@ export default function AdminBackupsPage() {
       const enabled = localStorage.getItem('hr_system_backup_auto_enabled') === 'true';
       const freq = localStorage.getItem('hr_system_backup_auto_interval');
       const dest = localStorage.getItem('hr_system_backup_auto_dest');
+      const folderId = localStorage.getItem('hr_system_backup_gdrive_folder_id') || '';
+      const conn = localStorage.getItem('hr_system_backup_gdrive_connected') === 'true';
 
       setAutoEnabled(enabled);
       if (freq) setFrequency(parseInt(freq));
       if (dest) setDestination(dest as any);
+      setGdriveFolderId(folderId);
+      setGdriveConnected(conn);
     }
   };
 
-  const saveAutomationSettings = (enabled: boolean, freq: number, dest: 'server' | 'local' | 'both') => {
+  const saveAutomationSettings = (enabled: boolean, freq: number, dest: 'server' | 'local' | 'gdrive' | 'all') => {
     if (typeof window !== 'undefined') {
       localStorage.setItem('hr_system_backup_auto_enabled', String(enabled));
       localStorage.setItem('hr_system_backup_auto_interval', String(freq));
@@ -175,6 +185,30 @@ export default function AdminBackupsPage() {
     }
   };
 
+  const handleToggleGDriveConnect = () => {
+    if (gdriveConnected) {
+      localStorage.setItem('hr_system_backup_gdrive_connected', 'false');
+      setGdriveConnected(false);
+      logAction('DISCONNECT_GDRIVE', 'Database', 'Disconnected Google Drive service account integration.');
+      showStatus('success', 'Google Drive integration disconnected.');
+    } else {
+      setIsConnectingGDrive(true);
+      showStatus('info', 'Connecting to Google Drive API...');
+      setTimeout(() => {
+        setIsConnectingGDrive(false);
+        localStorage.setItem('hr_system_backup_gdrive_connected', 'true');
+        setGdriveConnected(true);
+        logAction('CONNECT_GDRIVE', 'Database', 'Successfully authorized Google Service Account for Google Drive upload.');
+        showStatus('success', 'Connected! Service account client authorized.');
+      }, 1200);
+    }
+  };
+
+  const handleGdriveFolderIdChange = (val: string) => {
+    setGdriveFolderId(val);
+    localStorage.setItem('hr_system_backup_gdrive_folder_id', val);
+  };
+
   const loadBackupHistory = async () => {
     setLoadingHistory(true);
     try {
@@ -192,9 +226,17 @@ export default function AdminBackupsPage() {
       } else {
         setLocalBackups([]);
       }
+
+      // 3. Load GDrive Backups (from localStorage list)
+      const gdriveStored = localStorage.getItem('hr_system_gdrive_backups');
+      if (gdriveStored) {
+        setGdriveBackups(JSON.parse(gdriveStored));
+      } else {
+        setGdriveBackups([]);
+      }
     } catch (e) {
       console.error('Failed to load backups history', e);
-      showStatus('error', 'Failed to retrieve backup files list from server.');
+      showStatus('error', 'Failed to retrieve backup files list.');
     } finally {
       setLoadingHistory(false);
     }
@@ -216,8 +258,13 @@ export default function AdminBackupsPage() {
       const dataToBackup = mockDb.exportAllData();
       const backupLabel = labelInput || 'manual';
 
-      // 1. Save on Server (if dest is server or both)
-      if (destination === 'server' || destination === 'both') {
+      // Validation for Google Drive
+      if ((destination === 'gdrive' || destination === 'all') && !gdriveConnected) {
+        throw new Error('Google Drive destination is selected but no Google Service Account is connected. Please connect one first!');
+      }
+
+      // 1. Save on Server
+      if (destination === 'server' || destination === 'all') {
         const res = await fetch('/api/admin/backups', {
           method: 'POST',
           headers: {
@@ -236,8 +283,8 @@ export default function AdminBackupsPage() {
         }
       }
 
-      // 2. Save to Local Browser Storage (if dest is local or both)
-      if (destination === 'local' || destination === 'both') {
+      // 2. Save to Local Browser Storage
+      if (destination === 'local' || destination === 'all') {
         const timestamp = Date.now();
         const localFilename = `backup_${timestamp}_manual_${backupLabel}.json`;
         const sizeEstimate = JSON.stringify(dataToBackup).length;
@@ -247,7 +294,7 @@ export default function AdminBackupsPage() {
           size: sizeEstimate,
           createdAt: new Date().toISOString(),
           type: 'manual',
-          tables: dataToBackup // store contents locally
+          tables: dataToBackup
         };
 
         const existingLocal = localStorage.getItem('hr_system_local_backups');
@@ -256,10 +303,36 @@ export default function AdminBackupsPage() {
         localStorage.setItem('hr_system_local_backups', JSON.stringify(list));
       }
 
+      // 3. Save to Google Drive (Mocked for UI display)
+      if (destination === 'gdrive' || destination === 'all') {
+        showStatus('info', 'Uploading snapshot to Google Drive folder...');
+        await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate GDrive upload latency
+        
+        const timestamp = Date.now();
+        const gdriveFilename = `gdrive_backup_${timestamp}_manual_${backupLabel}.json`;
+        const sizeEstimate = JSON.stringify(dataToBackup).length;
+        
+        const newGdriveBackup = {
+          filename: gdriveFilename,
+          size: sizeEstimate,
+          createdAt: new Date().toISOString(),
+          type: 'manual',
+          tables: dataToBackup,
+          folderId: gdriveFolderId || 'My Drive Root'
+        };
+
+        const existingGdrive = localStorage.getItem('hr_system_gdrive_backups');
+        const list = existingGdrive ? JSON.parse(existingGdrive) : [];
+        list.unshift(newGdriveBackup);
+        localStorage.setItem('hr_system_gdrive_backups', JSON.stringify(list));
+        
+        logAction('UPLOAD_DATABASE_BACKUP_GDRIVE', 'Database', `Uploaded backup to Google Drive folder: ${gdriveFolderId || 'Root'}`);
+      }
+
       // Download file to browser automatically
       downloadJsonFile(dataToBackup, `hr_backup_${Date.now()}_${backupLabel}.json`);
 
-      logAction('CREATE_DATABASE_BACKUP', 'Database', `Manual backup created. Label: ${backupLabel}`);
+      logAction('CREATE_DATABASE_BACKUP', 'Database', `Manual backup created. Destination: ${destination}`);
       showStatus('success', 'Database backup completed and saved successfully!');
       loadBackupHistory();
     } catch (error: any) {
@@ -290,8 +363,14 @@ export default function AdminBackupsPage() {
     try {
       const dataToBackup = mockDb.exportAllData();
 
+      // Check Google Drive auth if selected
+      if ((destination === 'gdrive' || destination === 'all') && !gdriveConnected) {
+        console.warn('[AUTOBACKUP WARNING] Google Drive destination selected but not authorized.');
+        return;
+      }
+
       // 1. Save on Server
-      if (destination === 'server' || destination === 'both') {
+      if (destination === 'server' || destination === 'all') {
         await fetch('/api/admin/backups', {
           method: 'POST',
           headers: {
@@ -306,7 +385,7 @@ export default function AdminBackupsPage() {
       }
 
       // 2. Save in local storage
-      if (destination === 'local' || destination === 'both') {
+      if (destination === 'local' || destination === 'all') {
         const timestamp = Date.now();
         const localFilename = `backup_${timestamp}_auto_system.json`;
         const sizeEstimate = JSON.stringify(dataToBackup).length;
@@ -325,6 +404,27 @@ export default function AdminBackupsPage() {
         localStorage.setItem('hr_system_local_backups', JSON.stringify(list));
       }
 
+      // 3. Save to Google Drive (Mocked)
+      if (destination === 'gdrive' || destination === 'all') {
+        const timestamp = Date.now();
+        const gdriveFilename = `gdrive_backup_${timestamp}_auto_system.json`;
+        const sizeEstimate = JSON.stringify(dataToBackup).length;
+        
+        const newGdriveBackup = {
+          filename: gdriveFilename,
+          size: sizeEstimate,
+          createdAt: new Date().toISOString(),
+          type: 'auto',
+          tables: dataToBackup,
+          folderId: gdriveFolderId || 'My Drive Root'
+        };
+
+        const existingGdrive = localStorage.getItem('hr_system_gdrive_backups');
+        const list = existingGdrive ? JSON.parse(existingGdrive) : [];
+        list.unshift(newGdriveBackup);
+        localStorage.setItem('hr_system_gdrive_backups', JSON.stringify(list));
+      }
+
       localStorage.setItem('hr_system_backup_last_run', String(Date.now()));
       loadBackupHistory();
       logAction('AUTOMATED_DATABASE_BACKUP', 'Database', 'Automated database snapshot completed by system scheduler.');
@@ -334,15 +434,20 @@ export default function AdminBackupsPage() {
   };
 
   // Delete a backup
-  const handleDeleteBackup = async (filename: string, isLocal: boolean) => {
+  const handleDeleteBackup = async (filename: string, source: 'server' | 'local' | 'gdrive') => {
     if (!confirm(`Are you sure you want to permanently delete backup "${filename}"?`)) return;
 
     try {
-      if (isLocal) {
+      if (source === 'local') {
         const list = localBackups.filter(b => b.filename !== filename);
         localStorage.setItem('hr_system_local_backups', JSON.stringify(list));
         setLocalBackups(list);
         showStatus('success', 'Local backup deleted successfully.');
+      } else if (source === 'gdrive') {
+        const list = gdriveBackups.filter(b => b.filename !== filename);
+        localStorage.setItem('hr_system_gdrive_backups', JSON.stringify(list));
+        setGdriveBackups(list);
+        showStatus('success', 'Google Drive backup file deleted successfully.');
       } else {
         const res = await fetch(`/api/admin/backups?filename=${encodeURIComponent(filename)}`, {
           method: 'DELETE'
@@ -355,7 +460,7 @@ export default function AdminBackupsPage() {
           throw new Error(result.error || 'Failed to delete server file');
         }
       }
-      logAction('DELETE_BACKUP_FILE', 'Database', `Deleted backup file: ${filename}`);
+      logAction('DELETE_BACKUP_FILE', 'Database', `Deleted backup file: ${filename} from ${source}`);
     } catch (e: any) {
       showStatus('error', e.message || 'Failed to delete backup file.');
     }
@@ -385,7 +490,7 @@ export default function AdminBackupsPage() {
   };
 
   // Restore database state from a backup
-  const handleRestoreBackup = async (filename: string, isLocal: boolean, localData?: any) => {
+  const handleRestoreBackup = async (filename: string, source: 'server' | 'local' | 'gdrive', localData?: any) => {
     const warningText = "WARNING: Restoring will overwrite all current system data (Employees, Payroll, Leaves, Attendance, etc.). The application will reload. Proceed?";
     if (!confirm(warningText)) return;
 
@@ -396,7 +501,7 @@ export default function AdminBackupsPage() {
       let tablesToRestore = localData;
 
       // If server file, fetch its data first
-      if (!isLocal) {
+      if (source === 'server') {
         const res = await fetch('/api/admin/backups/restore', {
           method: 'POST',
           headers: {
@@ -424,7 +529,7 @@ export default function AdminBackupsPage() {
       // Run import
       const success = mockDb.importAllData(tablesToRestore);
       if (success) {
-        logAction('RESTORE_DATABASE_STATE', 'Database', `Restored database to snapshot: ${filename}`);
+        logAction('RESTORE_DATABASE_STATE', 'Database', `Restored database to snapshot: ${filename} (source: ${source})`);
         showStatus('success', 'System restored successfully! Reloading...');
         
         setTimeout(() => {
@@ -467,7 +572,7 @@ export default function AdminBackupsPage() {
     reader.onload = async (event) => {
       try {
         const parsed = JSON.parse(event.target?.result as string);
-        await handleRestoreBackup(file.name, true, parsed);
+        await handleRestoreBackup(file.name, 'local', parsed);
       } catch (e) {
         showStatus('error', 'File parsing failed. The file is not a valid JSON.');
       }
@@ -638,9 +743,61 @@ export default function AdminBackupsPage() {
                 >
                   <option value="server">Server Disk Storage</option>
                   <option value="local">Local Browser Storage</option>
-                  <option value="both">Both (Server & Browser)</option>
+                  <option value="gdrive">Google Drive Cloud Storage (Mocked)</option>
+                  <option value="all">All Destinations (Server, Local & Drive)</option>
                 </select>
               </div>
+
+              {/* Google Drive Integration Panel */}
+              {(destination === 'gdrive' || destination === 'all') && (
+                <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-3 mt-2 text-slate-700">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold flex items-center gap-1.5">
+                      <span className="w-2.5 h-2.5 rounded-full bg-gradient-to-tr from-yellow-400 via-green-500 to-blue-500 inline-block" />
+                      Google Drive Link
+                    </span>
+                    <span className={`text-[9px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider ${
+                      gdriveConnected ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-200 text-slate-600'
+                    }`}>
+                      {gdriveConnected ? 'Connected' : 'Disconnected'}
+                    </span>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <div>
+                      <label htmlFor="folder-id-input" className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Target Folder ID</label>
+                      <input
+                        id="folder-id-input"
+                        type="text"
+                        value={gdriveFolderId}
+                        onChange={(e) => handleGdriveFolderIdChange(e.target.value)}
+                        placeholder="e.g. 1A_2B_3C_xyz789..."
+                        className="w-full text-xs font-semibold bg-white border border-slate-200 text-slate-700 rounded-lg px-2.5 py-1.5 mt-0.5 outline-none focus:border-indigo-500 transition-all"
+                      />
+                    </div>
+
+                    <button
+                      onClick={handleToggleGDriveConnect}
+                      disabled={isConnectingGDrive}
+                      className={`w-full py-1.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
+                        gdriveConnected 
+                          ? 'bg-slate-100 hover:bg-slate-200 text-slate-600' 
+                          : 'bg-indigo-50 hover:bg-indigo-100 text-indigo-700'
+                      }`}
+                    >
+                      {isConnectingGDrive && <RefreshCw className="h-3 w-3 animate-spin" />}
+                      {gdriveConnected ? 'Disconnect Service Account' : 'Connect Service Account'}
+                    </button>
+                    
+                    {gdriveConnected && (
+                      <div className="text-[10px] text-slate-500 font-medium leading-normal bg-white p-2 border border-slate-100 rounded-lg">
+                        <span className="font-bold block text-slate-600">Active Service Client:</span>
+                        hr-backup-service@system-1290.iam.gserviceaccount.com
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
 
               {/* Live Status countdown */}
               <div className="pt-2">
@@ -738,10 +895,10 @@ export default function AdminBackupsPage() {
                 Backup Log History
               </h2>
               
-              <div className="flex gap-1.5 p-1 bg-slate-100 rounded-xl">
+              <div className="flex gap-1.5 p-1 bg-slate-100 rounded-xl flex-wrap">
                 <button
                   onClick={() => setActiveTab('server')}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all ${
+                  className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all ${
                     activeTab === 'server' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-800'
                   }`}
                 >
@@ -750,12 +907,21 @@ export default function AdminBackupsPage() {
                 </button>
                 <button
                   onClick={() => setActiveTab('local')}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all ${
+                  className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all ${
                     activeTab === 'local' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-800'
                   }`}
                 >
                   <FileJson className="h-3 w-3" />
                   Local ({localBackups.length})
+                </button>
+                <button
+                  onClick={() => setActiveTab('gdrive')}
+                  className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all ${
+                    activeTab === 'gdrive' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-800'
+                  }`}
+                >
+                  <span className="w-2.5 h-2.5 rounded-full bg-gradient-to-tr from-yellow-400 via-green-500 to-blue-500 inline-block" />
+                  Google Drive ({gdriveBackups.length})
                 </button>
               </div>
             </div>
@@ -768,7 +934,7 @@ export default function AdminBackupsPage() {
                   <RefreshCw className="h-8 w-8 text-indigo-600 animate-spin" />
                   <p className="text-xs text-slate-500 font-semibold">Fetching backup index files...</p>
                 </div>
-              ) : (activeTab === 'server' ? serverBackups : localBackups).length === 0 ? (
+              ) : (activeTab === 'server' ? serverBackups : activeTab === 'local' ? localBackups : gdriveBackups).length === 0 ? (
                 <div className="flex flex-col justify-center items-center py-12 text-slate-400 text-center gap-2">
                   <Database className="h-10 w-10 text-slate-200" />
                   <p className="text-xs font-bold text-slate-500">No backups found in this storage partition</p>
@@ -788,7 +954,7 @@ export default function AdminBackupsPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {(activeTab === 'server' ? serverBackups : localBackups).map((backup) => (
+                    {(activeTab === 'server' ? serverBackups : activeTab === 'local' ? localBackups : gdriveBackups).map((backup) => (
                       <tr 
                         key={backup.filename}
                         className="border-b border-slate-50 text-slate-700 hover:bg-slate-50/50 transition-all"
@@ -797,6 +963,11 @@ export default function AdminBackupsPage() {
                           <span className="text-xs font-bold block text-slate-700" title={backup.filename}>
                             {backup.filename}
                           </span>
+                          {activeTab === 'gdrive' && backup.folderId && (
+                            <span className="text-[9px] text-slate-400 font-bold block">
+                              Folder ID: {backup.folderId}
+                            </span>
+                          )}
                         </td>
                         <td className="py-3 pr-2">
                           <span className={`inline-flex items-center px-1.5 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-wider ${
@@ -823,7 +994,7 @@ export default function AdminBackupsPage() {
                           <div className="inline-flex items-center gap-1.5">
                             {/* Restore Button */}
                             <button
-                              onClick={() => handleRestoreBackup(backup.filename, activeTab === 'local', backup.tables)}
+                              onClick={() => handleRestoreBackup(backup.filename, activeTab, backup.tables)}
                               disabled={isRestoring}
                               className="px-2.5 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold rounded-lg text-[10px] transition-colors"
                               title="Restore to this point"
@@ -844,7 +1015,7 @@ export default function AdminBackupsPage() {
 
                             {/* Delete Button */}
                             <button
-                              onClick={() => handleDeleteBackup(backup.filename, activeTab === 'local')}
+                              onClick={() => handleDeleteBackup(backup.filename, activeTab)}
                               className="p-1 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg transition-colors"
                               title="Delete backup"
                             >

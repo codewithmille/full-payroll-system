@@ -63,7 +63,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           const destination = localStorage.getItem('hr_system_backup_auto_dest') || 'server';
 
           // 1. Save on Server
-          if (destination === 'server' || destination === 'both') {
+          if (destination === 'server' || destination === 'all') {
             await fetch('/api/admin/backups', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
@@ -76,7 +76,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           }
 
           // 2. Save in local storage
-          if (destination === 'local' || destination === 'both') {
+          if (destination === 'local' || destination === 'all') {
             const timestamp = Date.now();
             const localFilename = `backup_${timestamp}_auto_system.json`;
             const sizeEstimate = JSON.stringify(dataToBackup).length;
@@ -93,6 +93,31 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             const list = existingLocal ? JSON.parse(existingLocal) : [];
             list.unshift(newLocalBackup);
             localStorage.setItem('hr_system_local_backups', JSON.stringify(list));
+          }
+
+          // 3. Save to Google Drive (Mocked for UI display)
+          if (destination === 'gdrive' || destination === 'all') {
+            const gdriveConnected = localStorage.getItem('hr_system_backup_gdrive_connected') === 'true';
+            const gdriveFolderId = localStorage.getItem('hr_system_backup_gdrive_folder_id') || '';
+            if (gdriveConnected) {
+              const timestamp = Date.now();
+              const gdriveFilename = `gdrive_backup_${timestamp}_auto_system.json`;
+              const sizeEstimate = JSON.stringify(dataToBackup).length;
+              
+              const newGdriveBackup = {
+                filename: gdriveFilename,
+                size: sizeEstimate,
+                createdAt: new Date().toISOString(),
+                type: 'auto',
+                tables: dataToBackup,
+                folderId: gdriveFolderId || 'My Drive Root'
+              };
+
+              const existingGdrive = localStorage.getItem('hr_system_gdrive_backups');
+              const list = existingGdrive ? JSON.parse(existingGdrive) : [];
+              list.unshift(newGdriveBackup);
+              localStorage.setItem('hr_system_gdrive_backups', JSON.stringify(list));
+            }
           }
 
           localStorage.setItem('hr_system_backup_last_run', String(Date.now()));
