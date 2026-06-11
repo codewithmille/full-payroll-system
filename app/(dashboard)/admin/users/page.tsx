@@ -119,13 +119,9 @@ export default function AdminUsersPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-black text-slate-800 tracking-tight">Administration Center</h1>
-          <p className="text-xs text-slate-400 font-semibold mt-0.5">Configure system security clearances and generate analytical reports</p>
-        </div>
-
+      {/* Sub-header: save success toast only */}
+      <div className="flex items-center justify-between min-h-[32px]">
+        <p className="text-xs text-slate-400 font-semibold">Configure system security clearances and generate analytical reports</p>
         {saveSuccess && (
           <span className="flex items-center space-x-1.5 text-xs text-emerald-600 bg-emerald-50 border border-emerald-100 px-3 py-1.5 rounded-xl font-bold shadow-sm animate-pulse">
             <CheckCircle className="h-4 w-4 text-emerald-500" />

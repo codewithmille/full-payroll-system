@@ -8,16 +8,11 @@ import Link from 'next/link';
 import { 
   CreditCard, 
   Calendar, 
-  Search, 
-  Bell, 
   Plus, 
   FileText, 
   Check, 
   Clock, 
-  ArrowUpRight,
   TrendingUp,
-  Sliders,
-  DollarSign,
   Shield,
   Fingerprint
 } from 'lucide-react';
@@ -116,24 +111,9 @@ export default function StaffPortalHomePage() {
       
       {/* LEFT & CENTER PORTIONS (col-span-2) */}
       <div className="xl:col-span-2 space-y-8">
-        
-        {/* Top Header Row */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-black text-slate-800 tracking-tight">Portal Dashboard</h1>
-            <p className="text-xs text-slate-400 font-semibold mt-0.5">Welcome back, {profile.firstName}!</p>
-          </div>
-          
-          <div className="flex items-center space-x-3">
-            <button className="h-9 w-9 bg-white border border-slate-100 rounded-xl flex items-center justify-center text-slate-500 hover:text-indigo-600 transition-all shadow-sm cursor-pointer">
-              <Search className="h-4.5 w-4.5" />
-            </button>
-            <button className="h-9 w-9 bg-white border border-slate-100 rounded-xl flex items-center justify-center text-slate-500 hover:text-indigo-600 transition-all shadow-sm relative cursor-pointer">
-              <Bell className="h-4.5 w-4.5" />
-              <span className="absolute top-2 right-2 h-2 w-2 bg-rose-500 rounded-full"></span>
-            </button>
-          </div>
-        </div>
+
+        {/* Welcome greeting */}
+        <p className="text-sm text-slate-500 font-semibold">Welcome back, <span className="text-indigo-600 font-bold">{profile.firstName}</span>! 👋</p>
 
         {/* Cobalt Gradient Metric Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

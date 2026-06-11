@@ -52,15 +52,12 @@ export default function EmployeeDirectoryPage() {
 
   return (
     <div className="space-y-6">
-      {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-black text-slate-800 tracking-tight">Employee Records</h1>
-          <p className="text-xs text-slate-400 font-semibold mt-0.5">Manage and onboard staff information and work details</p>
-        </div>
+      {/* Page Sub-header: action button only */}
+      <div className="flex items-center justify-between">
+        <p className="text-xs text-slate-400 font-semibold">Manage and onboard staff information and work details</p>
         <Link
           href="/hr/employees/new"
-          className="inline-flex items-center justify-center space-x-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 px-4 rounded-xl transition-all shadow-md shadow-indigo-500/10 cursor-pointer self-start sm:self-auto"
+          className="inline-flex items-center justify-center space-x-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 px-4 rounded-xl transition-all shadow-md shadow-indigo-500/10 cursor-pointer"
         >
           <Plus className="h-4.5 w-4.5 stroke-[2.5]" />
           <span className="text-sm">Onboard Employee</span>
