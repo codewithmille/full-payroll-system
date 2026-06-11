@@ -549,69 +549,8 @@ export default function HRAttendancePage() {
 
         </div>
 
-        {/* Right Side: IoT Device Webhook Simulator */}
+        {/* Right Side: ZKTeco Device Manager */}
         <div className="lg:col-span-1 space-y-6">
-          
-          {/* IoT Controller Simulator Card */}
-          <div className="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm space-y-4 relative overflow-hidden">
-            <div className="absolute top-0 left-0 right-0 h-1 bg-indigo-500"></div>
-            
-            <div className="flex items-center space-x-2 border-b border-slate-50 pb-3">
-              <Cpu className="h-5 w-5 text-indigo-500" />
-              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700">IoT Hardware Control</h3>
-            </div>
-
-            <p className="text-[10px] text-slate-400 font-semibold leading-relaxed">
-              Interfacing with physical ESP32 or ESP8266 Wi-Fi microcontrollers. Enrolling fingerprints maps a biometric signature to an enrolled Fingerprint ID.
-            </p>
-
-            {/* Alert banner */}
-            {iotAlert && (
-              <div className={`p-3 rounded-xl border text-[10px] font-bold leading-normal flex items-start gap-1.5 ${
-                iotAlert.type === 'success' 
-                  ? 'bg-emerald-50 text-emerald-600 border-emerald-100' 
-                  : 'bg-rose-50 text-rose-700 border-rose-100'
-              }`}>
-                <Wifi className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5 animate-pulse" />
-                <span>{iotAlert.message}</span>
-              </div>
-            )}
-
-            <div className="space-y-4 pt-1">
-              <div>
-                <label className="block text-[9px] text-slate-400 mb-1.5 uppercase tracking-wider">Select Device Enrollment</label>
-                <select
-                  value={iotEmpId}
-                  onChange={(e) => setIotEmpId(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 focus:border-indigo-500 focus:bg-white rounded-xl py-2 px-3 text-xs focus:outline-none text-slate-805 cursor-pointer font-bold transition-all"
-                >
-                  {employees.map(emp => (
-                    <option key={emp.id} value={emp.id}>
-                      {emp.firstName} {emp.lastName} (Finger ID #{emp.fingerprintId || 'N/A'})
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <button
-                onClick={handleSimulateIot}
-                className="w-full py-2.5 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-black tracking-wider shadow-sm flex items-center justify-center space-x-2 transition-all cursor-pointer"
-              >
-                <Fingerprint className="h-4 w-4 text-emerald-400 animate-pulse" />
-                <span>SIMULATE ESP32 WEBHOOK</span>
-              </button>
-            </div>
-
-            <div className="bg-slate-50 border border-slate-100 rounded-xl p-3 text-[9px] text-slate-400 space-y-1 font-semibold leading-relaxed">
-              <strong className="text-slate-650 block mb-1">Expected HTTP JSON Payload:</strong>
-              <div className="bg-slate-950/5 p-2 rounded font-mono text-slate-600 border border-slate-200/50">
-                POST /api/iot/fingerprint<br/>
-                Header: "Content-Type: application/json"<br/>
-                Body: &#123; "fingerprintId": 2, "secretKey": "HR_SYSTEM_IOT_SECRET" &#125;
-              </div>
-            </div>
-
-          </div>
 
           {/* ZKTeco WL20 WiFi Sync & USB CSV Importer Card */}
           <div className="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm space-y-4 relative overflow-hidden">
