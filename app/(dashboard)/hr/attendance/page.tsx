@@ -44,6 +44,9 @@ export default function HRAttendancePage() {
   const [zkSyncing, setZkSyncing] = useState(false);
   const [zkAlert, setZkAlert] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
+  // Delete modal state
+  const [deleteRecordId, setDeleteRecordId] = useState<string | null>(null);
+
   // Initialize first employee for selector
   useEffect(() => {
     if (employees.length > 0) {
@@ -207,6 +210,8 @@ export default function HRAttendancePage() {
     return true;
   });
 
+  const deleteRecord = logs.find(r => r.id === deleteRecordId);
+
   // Open edit log modal
   const handleEditOpen = (record: AttendanceRecord) => {
     setIsAddMode(false);
@@ -273,12 +278,12 @@ export default function HRAttendancePage() {
   };
 
   // Handle Delete
-  const handleDeleteLog = (id: string) => {
-    if (confirm('Are you sure you want to delete this attendance log?')) {
-      mockDb.deleteAttendanceRecord(id);
-      logAction('ADMIN_DELETE_ATTENDANCE_LOG', 'AttendanceRecord', `Deleted attendance record ID ${id}`);
-      loadData();
-    }
+  const handleConfirmDelete = () => {
+    if (!deleteRecordId) return;
+    mockDb.deleteAttendanceRecord(deleteRecordId);
+    logAction('ADMIN_DELETE_ATTENDANCE_LOG', 'AttendanceRecord', `Deleted attendance record ID ${deleteRecordId}`);
+    loadData();
+    setDeleteRecordId(null);
   };
 
   // Export CSV
@@ -525,7 +530,7 @@ export default function HRAttendancePage() {
                             <Edit2 className="h-3.5 w-3.5" />
                           </button>
                           <button
-                            onClick={() => handleDeleteLog(log.id)}
+                            onClick={() => setDeleteRecordId(log.id)}
                             className="p-1 hover:text-rose-500 hover:bg-rose-50 border border-transparent hover:border-rose-100 rounded-lg transition-colors cursor-pointer"
                             title="Delete Log"
                           >
@@ -766,6 +771,68 @@ export default function HRAttendancePage() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {deleteRecordId && deleteRecord && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+          <div className="w-full max-w-sm bg-white border border-slate-100 rounded-3xl p-6 shadow-2xl relative overflow-hidden">
+            <div className="absolute top-0 left-0 right-0 h-1 bg-rose-500"></div>
+            
+            <button
+              onClick={() => setDeleteRecordId(null)}
+              className="absolute top-4 right-4 p-1 hover:bg-slate-50 rounded transition-colors text-slate-400 hover:text-slate-700"
+            >
+              <X className="h-5 w-5" />
+            </button>
+
+            <div className="space-y-4 text-xs font-bold text-slate-750">
+              <div className="flex items-center space-x-2 text-rose-600 font-bold border-b border-slate-100 pb-3">
+                <AlertTriangle className="h-5 w-5 animate-bounce" />
+                <h3 className="text-sm uppercase tracking-wider">Delete Attendance Log</h3>
+              </div>
+
+              <div className="space-y-2 leading-relaxed text-slate-500 font-semibold">
+                <p>Are you sure you want to permanently delete this attendance record?</p>
+                <div className="bg-slate-50 border border-slate-200/50 rounded-2xl p-3 text-[11px] font-bold text-slate-800 space-y-1">
+                  <div className="flex justify-between">
+                    <span className="text-slate-400 font-semibold">Staff:</span>
+                    <span>{deleteRecord.employeeName}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-400 font-semibold">Date:</span>
+                    <span className="font-mono">{deleteRecord.date}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-400 font-semibold">Clock In:</span>
+                    <span>{deleteRecord.clockIn || '--:--'}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-400 font-semibold">Clock Out:</span>
+                    <span>{deleteRecord.clockOut || '--:--'}</span>
+                  </div>
+                </div>
+                <p className="text-[10px] text-rose-500 font-bold mt-2">This action cannot be undone.</p>
+              </div>
+
+              <div className="flex gap-3 pt-2 text-xs font-bold">
+                <button
+                  type="button"
+                  onClick={() => setDeleteRecordId(null)}
+                  className="flex-1 py-2.5 px-4 rounded-xl border border-slate-200 text-slate-500 hover:bg-slate-50 transition-all cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleConfirmDelete}
+                  className="flex-1 py-2.5 px-4 rounded-xl bg-rose-500 hover:bg-rose-600 text-white transition-all cursor-pointer shadow-md shadow-rose-500/10"
+                >
+                  Delete Record
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}
