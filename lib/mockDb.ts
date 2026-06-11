@@ -999,16 +999,17 @@ class MockDBStore {
     } else {
       updated = {
         ...profile,
-        id: `emp-${Date.now()}`
+        id: `emp-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`
       };
       list.push(updated);
 
       // Create initial leave balances for new employee
       const leaveBalances = this.getLeaveBalancesAll();
+      const randSuffix = Math.random().toString(36).substring(2, 9);
       const defaultBalances: LeaveBalance[] = [
-        { id: `lb-${Date.now()}-1`, employeeId: updated.id, leaveType: 'VACATION', allocated: 15, used: 0, pending: 0 },
-        { id: `lb-${Date.now()}-2`, employeeId: updated.id, leaveType: 'SICK', allocated: 10, used: 0, pending: 0 },
-        { id: `lb-${Date.now()}-3`, employeeId: updated.id, leaveType: 'EMERGENCY', allocated: 5, used: 0, pending: 0 }
+        { id: `lb-${Date.now()}-${randSuffix}-1`, employeeId: updated.id, leaveType: 'VACATION', allocated: 15, used: 0, pending: 0 },
+        { id: `lb-${Date.now()}-${randSuffix}-2`, employeeId: updated.id, leaveType: 'SICK', allocated: 10, used: 0, pending: 0 },
+        { id: `lb-${Date.now()}-${randSuffix}-3`, employeeId: updated.id, leaveType: 'EMERGENCY', allocated: 5, used: 0, pending: 0 }
       ];
       this.set('leave_balances', [...leaveBalances, ...defaultBalances]);
     }
@@ -1090,7 +1091,7 @@ class MockDBStore {
         startDate: request.startDate || '',
         endDate: request.endDate || '',
         reason: request.reason || '',
-        id: `lr-${Date.now()}`,
+        id: `lr-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
         status: 'PENDING',
         createdAt: new Date().toISOString()
       } as LeaveRequest;
@@ -1150,7 +1151,7 @@ class MockDBStore {
   createPayrollRun(run: Omit<PayrollRun, 'id' | 'createdAt' | 'status' | 'totalGrossPay' | 'totalNetPay' | 'totalDeductions'>): PayrollRun {
     const newRun: PayrollRun = {
       ...run,
-      id: `pr-${Date.now()}`,
+      id: `pr-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
       status: 'DRAFT',
       totalGrossPay: 0,
       totalNetPay: 0,
@@ -1196,7 +1197,7 @@ class MockDBStore {
       const netPay = grossPay - totalDeductions;
 
       return {
-        id: `ps-${Date.now()}-${emp.id}`,
+        id: `ps-${Date.now()}-${emp.id}-${Math.random().toString(36).substring(2, 9)}`,
         payrollRunId: newRun.id,
         employeeId: emp.id,
         employeeName: `${emp.firstName} ${emp.lastName}`,
@@ -1297,7 +1298,7 @@ class MockDBStore {
   addAuditLog(user: User, action: string, resource: string, details: string): void {
     const logs = this.getAuditLogs();
     const newLog: AuditLog = {
-      id: `log-${Date.now()}`,
+      id: `log-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
       userId: user.id,
       userName: user.name,
       userEmail: user.email,
