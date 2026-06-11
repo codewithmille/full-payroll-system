@@ -1295,7 +1295,27 @@ class MockDBStore {
 
   // Audit Logs
   getAuditLogs(): AuditLog[] {
-    return this.get('audit_logs', INITIAL_AUDIT_LOGS);
+    const logs = this.get('audit_logs', INITIAL_AUDIT_LOGS);
+    const seenIds = new Set<string>();
+    let hasModified = false;
+    
+    const cleaned = logs.map((log, idx) => {
+      if (!log.id || seenIds.has(log.id)) {
+        hasModified = true;
+        const rand = Math.random().toString(36).substring(2, 9);
+        return {
+          ...log,
+          id: `log-${Date.now()}-${rand}-${idx}`
+        };
+      }
+      seenIds.add(log.id);
+      return log;
+    });
+
+    if (hasModified) {
+      this.set('audit_logs', cleaned);
+    }
+    return cleaned;
   }
 
   addAuditLog(user: User, action: string, resource: string, details: string): void {

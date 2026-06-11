@@ -109,9 +109,9 @@ export default function AdminAuditLogsPage() {
             </thead>
             <tbody className="divide-y divide-slate-100/70 text-slate-700 font-semibold">
               {filteredLogs.length > 0 ? (
-                filteredLogs.map((log) => (
+                filteredLogs.map((log, idx) => (
                   <tr 
-                    key={log.id} 
+                    key={`${log.id}-${idx}`} 
                     className="hover:bg-slate-50/45 transition-colors"
                   >
                     <td className="py-4 px-6 text-slate-400 font-mono text-[10px]">
