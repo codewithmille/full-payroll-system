@@ -29,13 +29,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         } catch (e) {
           console.error('Failed to parse session', e);
         }
-      } else {
-        // Default to Administrator on first load for showcase
-        const defaultUser = mockDb.getUsers().find(u => u.role === 'ADMIN') || null;
-        if (defaultUser) {
-          setUser(defaultUser);
-          localStorage.setItem('hr_system_session', JSON.stringify(defaultUser));
-        }
       }
       setIsLoading(false);
     }

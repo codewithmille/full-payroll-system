@@ -75,10 +75,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const handleRoleSwitch = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const chosenRole = e.target.value as any;
     switchRole(chosenRole);
-    if      (chosenRole === 'STAFF')          router.push('/portal');
-    else if (chosenRole === 'HR')             router.push('/hr/employees');
-    else if (chosenRole === 'PAYROLL_OFFICER') router.push('/payroll/runs');
-    else                                       router.push('/admin/users');
+    router.push('/portal');
   };
 
   const sidebarWidth = isCollapsed ? SIDEBAR_COLLAPSED : SIDEBAR_EXPANDED;
