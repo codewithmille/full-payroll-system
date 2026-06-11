@@ -63,6 +63,7 @@ export interface LeaveRequest {
   approvedById?: string;
   approvedByName?: string;
   rejectionReason?: string;
+  approvalNote?: string;
   createdAt: string;
 }
 
@@ -1056,6 +1057,7 @@ class MockDBStore {
     approvedById?: string;
     approvedByName?: string;
     rejectionReason?: string;
+    approvalNote?: string;
   }): LeaveRequest {
     const list = this.getLeaveRequests();
     let updated: LeaveRequest;
@@ -1067,6 +1069,7 @@ class MockDBStore {
           ...existing,
           status: request.status || existing.status,
           rejectionReason: request.rejectionReason ?? existing.rejectionReason,
+          approvalNote: request.approvalNote ?? existing.approvalNote,
           approvedById: request.approvedById ?? existing.approvedById,
           approvedByName: request.approvedByName ?? existing.approvedByName,
         };
