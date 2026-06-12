@@ -159,6 +159,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     links.push({ name: 'PAYROLL CYCLES',icon: CreditCard,     path: '/payroll/runs',      group: 'PAYROLL',      roles: ['ADMIN','PAYROLL_OFFICER'] });
     links.push({ name: 'PAYROLL CONFIG',icon: Settings,       path: '/payroll/settings',  group: 'PAYROLL',      roles: ['ADMIN','PAYROLL_OFFICER'] });
     links.push({ name: 'ACCOUNTS',     icon: Shield,          path: '/admin/users',        group: 'ADMIN',        roles: ['ADMIN'] });
+    links.push({ name: 'SECURITY MONITOR', icon: ShieldAlert,  path: '/admin/security',     group: 'ADMIN',        roles: ['ADMIN'] });
     links.push({ name: 'AUDIT TRAIL',  icon: ShieldAlert,     path: '/admin/audit-logs',   group: 'ADMIN',        roles: ['ADMIN'] });
     links.push({ name: 'BACKUPS',      icon: Database,        path: '/admin/backups',      group: 'ADMIN',        roles: ['ADMIN'] });
 
@@ -194,6 +195,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </button>
       </header>
 
+      {/* Backdrop overlay for mobile sidebar */}
+      {isSidebarOpen && (
+        <div 
+          onClick={() => setIsSidebarOpen(false)}
+          className="fixed inset-0 z-40 bg-slate-900/40 backdrop-blur-xs md:hidden transition-opacity duration-300"
+        />
+      )}
+
       {/* ─── Sidebar ───────────────────────────────────────────────────── */}
       <aside
         style={{
@@ -211,6 +220,25 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       >
         {/* ── Top section ─────────────────────────────────────────────── */}
         <div className="flex flex-col gap-5 p-4 overflow-hidden">
+
+          {/* Mobile Branding + Close Toggle */}
+          <div className="flex md:hidden items-center justify-between min-h-[44px] pb-2 border-b border-slate-50">
+            <div className="flex items-center gap-2">
+              <div className="p-1.5 bg-gradient-to-tr from-indigo-500 to-blue-500 rounded-xl text-white shadow-sm">
+                <Shield className="h-4 w-4" />
+              </div>
+              <span className="font-extrabold text-sm text-slate-800 tracking-wide">
+                HR-SYSTEM
+              </span>
+            </div>
+            <button
+              onClick={() => setIsSidebarOpen(false)}
+              className="p-1.5 hover:bg-slate-50 border border-slate-100 rounded-xl cursor-pointer text-slate-400 hover:text-indigo-600 active:scale-95 transition-colors"
+              title="Close Sidebar"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
 
           {/* Branding + collapse toggle */}
           <div className="hidden md:flex items-center min-h-[44px]" style={{ justifyContent: isCollapsed ? 'center' : 'space-between' }}>
