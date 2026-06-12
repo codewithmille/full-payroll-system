@@ -168,12 +168,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   const navLinks = getNavLinks();
 
-  const handleRoleSwitch = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const chosenRole = e.target.value as any;
-    switchRole(chosenRole);
-    router.push('/portal');
-  };
-
   const sidebarWidth = isCollapsed ? SIDEBAR_COLLAPSED : SIDEBAR_EXPANDED;
 
   return (
@@ -272,66 +266,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             >
               <ChevronLeft className="h-4 w-4" />
             </button>
-          </div>
-
-          {/* Role Switcher Widget */}
-          <div
-            className="border border-slate-100 rounded-2xl overflow-hidden bg-slate-50 transition-all duration-300"
-            style={{ padding: isCollapsed ? '8px' : '14px' }}
-          >
-            {/* Collapsed: icon-only with invisible select overlay */}
-            <div
-              className="flex justify-center"
-              style={{
-                maxHeight: isCollapsed ? '40px' : '0px',
-                opacity: isCollapsed ? 1 : 0,
-                overflow: 'hidden',
-                pointerEvents: isCollapsed ? 'auto' : 'none',
-                transition: 'max-height 300ms ease-in-out, opacity 200ms ease-in-out',
-              }}
-            >
-              <div className="relative w-9 h-9 shrink-0">
-                <div className="w-full h-full rounded-xl bg-white border border-slate-100 flex items-center justify-center" title="Simulate Role">
-                  <ShieldAlert className="h-4 w-4 text-indigo-500" />
-                </div>
-                <select
-                  value={user.role}
-                  onChange={handleRoleSwitch}
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                >
-                  <option value="ADMIN">Administrator</option>
-                  <option value="HR">HR Manager</option>
-                  <option value="PAYROLL_OFFICER">Payroll Officer</option>
-                  <option value="STAFF">Staff Employee</option>
-                </select>
-              </div>
-            </div>
-
-            {/* Expanded: full widget */}
-            <div
-              style={{
-                maxHeight: isCollapsed ? '0px' : '96px',
-                opacity: isCollapsed ? 0 : 1,
-                overflow: 'hidden',
-                pointerEvents: isCollapsed ? 'none' : 'auto',
-                transition: 'max-height 300ms ease-in-out, opacity 200ms ease-in-out',
-              }}
-            >
-              <div className="flex items-center gap-2 mb-2 text-[9px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">
-                <ShieldAlert className="h-3.5 w-3.5 text-indigo-500 shrink-0" />
-                <span>Simulate Role</span>
-              </div>
-              <select
-                value={user.role}
-                onChange={handleRoleSwitch}
-                className="w-full bg-white border border-slate-200 rounded-xl text-xs py-2 px-2.5 focus:outline-none focus:ring-1 focus:ring-indigo-500 text-slate-700 font-bold cursor-pointer shadow-sm"
-              >
-                <option value="ADMIN">Administrator</option>
-                <option value="HR">HR Manager</option>
-                <option value="PAYROLL_OFFICER">Payroll Officer</option>
-                <option value="STAFF">Staff Employee</option>
-              </select>
-            </div>
           </div>
 
           {/* Navigation Links with Group Labels */}
