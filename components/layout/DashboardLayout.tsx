@@ -290,8 +290,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 transition: 'max-height 300ms ease-in-out, opacity 200ms ease-in-out',
               }}
             >
-              <div className="relative">
-                <div className="w-9 h-9 rounded-xl bg-white border border-slate-100 flex items-center justify-center" title="Simulate Role">
+              <div className="relative w-9 h-9 shrink-0">
+                <div className="w-full h-full rounded-xl bg-white border border-slate-100 flex items-center justify-center" title="Simulate Role">
                   <ShieldAlert className="h-4 w-4 text-indigo-500" />
                 </div>
                 <select
