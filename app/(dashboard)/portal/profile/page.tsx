@@ -249,222 +249,217 @@ export default function StaffProfilePage() {
         <p className="text-xs text-slate-400 font-semibold mt-0.5">Verify your employment details, clearances, and bank coordinates</p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {/* ─── TOP BANNER: Personal Header & Work Details ─────────────────── */}
+      <div className="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
         
-        {/* Left Side: General Profile Card */}
-        <div className="lg:col-span-1 bg-white border border-slate-100 rounded-2xl p-6 shadow-sm flex flex-col items-center text-center space-y-4 h-fit">
-          <div className="h-20 w-20 rounded-3xl bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center font-extrabold text-3xl text-white shadow-inner border-2 border-white">
+        {/* Left Side: Avatar + Personal Info */}
+        <div className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-5">
+          <div className="h-20 w-20 rounded-3xl bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center font-extrabold text-3xl text-white shadow-inner border-2 border-white shrink-0">
             {profile.firstName.charAt(0)}{profile.lastName.charAt(0)}
           </div>
-          <div>
-            <h3 className="text-base font-black text-slate-800">{profile.firstName} {profile.lastName}</h3>
-            <p className="text-xs text-slate-400 font-semibold mt-1">{profile.jobTitle}</p>
-            <span className="inline-flex mt-3 text-[10px] font-mono bg-slate-50 text-slate-500 font-bold py-0.5 px-2.5 rounded-lg border border-slate-200">
-              {profile.employeeId}
-            </span>
-          </div>
-
-          <div className="w-full border-t border-slate-100 pt-4 space-y-3.5 text-left text-xs text-slate-500 font-semibold">
-            <div className="flex items-center space-x-2.5">
-              <Mail className="h-4 w-4 text-slate-400 shrink-0" />
-              <span className="truncate">{profile.personalEmail}</span>
+          <div className="space-y-1 pt-1">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+              <h2 className="text-lg font-black text-slate-800">{profile.firstName} {profile.lastName}</h2>
+              <span className="inline-flex text-[9px] font-mono bg-slate-50 text-slate-500 font-bold py-0.5 px-2.5 rounded-lg border border-slate-200 w-fit self-center">
+                {profile.employeeId}
+              </span>
             </div>
-            <div className="flex items-center space-x-2.5">
-              <Phone className="h-4 w-4 text-slate-400 shrink-0" />
-              <span>{profile.phone}</span>
-            </div>
-            <div className="flex items-start space-x-2.5 leading-relaxed">
-              <MapPin className="h-4 w-4 text-slate-400 shrink-0 mt-0.5" />
-              <span>{profile.address}</span>
+            <p className="text-xs text-slate-400 font-semibold">{profile.jobTitle}</p>
+            
+            <div className="flex flex-wrap justify-center sm:justify-start gap-x-4 gap-y-1.5 text-[11px] text-slate-500 font-semibold pt-2">
+              <div className="flex items-center space-x-1.5">
+                <Mail className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                <span>{profile.personalEmail}</span>
+              </div>
+              <div className="flex items-center space-x-1.5">
+                <Phone className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                <span>{profile.phone}</span>
+              </div>
+              <div className="flex items-center space-x-1.5">
+                <MapPin className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                <span>{profile.address}</span>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Right Side: Tab Details & Documents Gallery */}
-        <div className="lg:col-span-2 space-y-6">
-          
-          {/* Work details */}
-          <div className="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm space-y-4">
-            <div className="flex items-center space-x-2 border-b border-slate-100 pb-3">
-              <Briefcase className="h-4.5 w-4.5 text-indigo-500" />
-              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-700">Employment Metadata</h4>
-            </div>
-
-            <div className="grid grid-cols-2 gap-6 text-xs font-bold text-slate-700">
-              <div className="space-y-1">
-                <span className="text-slate-400 font-extrabold uppercase text-[9px]">Department</span>
-                <p className="text-sm font-black text-slate-800">{profile.department}</p>
-              </div>
-              <div className="space-y-1">
-                <span className="text-slate-400 font-extrabold uppercase text-[9px]">Employment Type</span>
-                <p className="text-sm font-black text-slate-800 capitalize">{profile.employmentType.toLowerCase().replace('_', ' ')}</p>
-              </div>
-              <div className="space-y-1">
-                <span className="text-slate-400 font-extrabold uppercase text-[9px]">Hire Date</span>
-                <p className="text-sm font-black text-slate-800">{profile.dateHired}</p>
-              </div>
-              <div className="space-y-1">
-                <span className="text-slate-400 font-extrabold uppercase text-[9px]">Status</span>
-                <div>
-                  <span className="inline-flex mt-1 items-center px-2.5 py-0.5 rounded-full text-[9px] font-extrabold bg-emerald-50 text-emerald-600 border border-emerald-100">
-                    {profile.employmentStatus}
-                  </span>
-                </div>
-              </div>
+        {/* Right Side: Employment Metadata stats */}
+        <div className="border-t lg:border-t-0 lg:border-l border-slate-100/80 pt-5 lg:pt-0 lg:pl-8 flex-1 grid grid-cols-2 gap-4 text-xs font-bold text-slate-700">
+          <div className="space-y-0.5">
+            <span className="text-slate-400 font-extrabold uppercase text-[8px] tracking-wider">Department</span>
+            <p className="text-sm font-black text-slate-800">{profile.department}</p>
+          </div>
+          <div className="space-y-0.5">
+            <span className="text-slate-400 font-extrabold uppercase text-[8px] tracking-wider">Employment Type</span>
+            <p className="text-sm font-black text-slate-800 capitalize">{profile.employmentType.toLowerCase().replace('_', ' ')}</p>
+          </div>
+          <div className="space-y-0.5">
+            <span className="text-slate-400 font-extrabold uppercase text-[8px] tracking-wider">Hire Date</span>
+            <p className="text-sm font-black text-slate-800">{profile.dateHired}</p>
+          </div>
+          <div className="space-y-0.5">
+            <span className="text-slate-400 font-extrabold uppercase text-[8px] tracking-wider">Status</span>
+            <div>
+              <span className="inline-flex mt-0.5 items-center px-2 py-0.5 rounded-full text-[8px] font-extrabold bg-emerald-50 text-emerald-600 border border-emerald-100">
+                {profile.employmentStatus}
+              </span>
             </div>
           </div>
+        </div>
 
-          {/* Salary & Finance details */}
-          <div className="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm space-y-4">
-            <div className="flex items-center space-x-2 border-b border-slate-100 pb-3">
-              <CreditCard className="h-4.5 w-4.5 text-indigo-500" />
-              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-700">Compensation & Banking</h4>
-            </div>
+      </div>
 
-            {/* Base Pay */}
-            <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 max-w-md shadow-sm">
-              <span className="block text-[9px] font-extrabold text-slate-400 uppercase tracking-wider mb-1">Confidential Monthly Rate (USD)</span>
-              <div className="flex items-center space-x-3">
-                <div className="font-mono text-base font-black text-slate-800 tracking-wider flex-1">
-                  {showSalary ? `$${profile.baseSalary.toLocaleString()}` : '••••••••'}
-                </div>
-                <button
-                  type="button"
-                  onClick={toggleSalary}
-                  className="p-1.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-400 hover:text-slate-700 rounded-lg transition-colors cursor-pointer shadow-sm animate-pulse"
-                >
-                  {showSalary ? <EyeOff className="h-4.5 w-4.5" /> : <Eye className="h-4.5 w-4.5" />}
-                </button>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-6 text-xs font-bold text-slate-700 pt-2">
-              <div className="space-y-1">
-                <span className="text-slate-400 font-extrabold uppercase text-[9px]">Bank Name</span>
-                <p className="text-sm font-black text-slate-800">{profile.bankName || 'N/A'}</p>
-              </div>
-              <div className="space-y-1">
-                <span className="text-slate-400 font-extrabold uppercase text-[9px]">Bank Account Number</span>
-                <p className="text-sm font-black text-slate-800 font-mono">{profile.bankAccountNumber || 'N/A'}</p>
-              </div>
-              <div className="space-y-1">
-                <span className="text-slate-400 font-extrabold uppercase text-[9px]">Tax Identification Number</span>
-                <p className="text-sm font-black text-slate-800 font-mono">{profile.taxIdNumber || 'N/A'}</p>
-              </div>
-              <div className="space-y-1">
-                <span className="text-slate-400 font-extrabold uppercase text-[9px]">Social Security Number</span>
-                <p className="text-sm font-black text-slate-800 font-mono">{profile.socialSecurityNo || 'N/A'}</p>
-              </div>
-            </div>
+      {/* ─── EQUAL-COLUMN DETAILS GRID ─────────────────────────────────── */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        
+        {/* Left Column: Compensation & Banking */}
+        <div className="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm space-y-4 h-fit">
+          <div className="flex items-center space-x-2 border-b border-slate-100 pb-3">
+            <CreditCard className="h-4.5 w-4.5 text-indigo-500" />
+            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-700">Compensation & Banking</h4>
           </div>
 
-          {/* 📁 NEW: Documents & Clearances Gallery */}
-          <div className="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <div className="flex items-center space-x-2">
-                <CalendarRange className="h-4.5 w-4.5 text-indigo-500" />
-                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-700">Documents & Clearances</h4>
-                <span className="text-[10px] bg-slate-100 text-slate-500 font-extrabold px-1.5 py-0.5 rounded-md">
-                  {documents.length}
-                </span>
+          {/* Base Pay */}
+          <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 max-w-md shadow-sm">
+            <span className="block text-[9px] font-extrabold text-slate-400 uppercase tracking-wider mb-1">Confidential Monthly Rate (USD)</span>
+            <div className="flex items-center space-x-3">
+              <div className="font-mono text-base font-black text-slate-800 tracking-wider flex-1">
+                {showSalary ? `$${profile.baseSalary.toLocaleString()}` : '••••••••'}
               </div>
-              
               <button
-                onClick={() => setIsUploadOpen(true)}
-                className="inline-flex items-center space-x-1.5 bg-indigo-650 bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold py-1.5 px-3 rounded-xl text-[10px] transition-colors cursor-pointer shadow-sm"
+                type="button"
+                onClick={toggleSalary}
+                className="p-1.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-400 hover:text-slate-700 rounded-lg transition-colors cursor-pointer shadow-sm animate-pulse"
               >
-                <Plus className="h-3.5 w-3.5" />
-                <span>Upload Clearance</span>
+                {showSalary ? <EyeOff className="h-4.5 w-4.5" /> : <Eye className="h-4.5 w-4.5" />}
               </button>
             </div>
+          </div>
 
-            {/* Gallery Grid */}
-            {documents.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {documents.map((doc) => {
-                  const status = getDocStatus(doc.expiryDate, doc.hasExpiry);
-                  
-                  return (
-                    <div 
-                      key={doc.id}
-                      className="border border-slate-100 rounded-2xl p-4 bg-slate-50/50 hover:bg-white hover:shadow-md transition-all flex flex-col justify-between space-y-3 relative group"
-                    >
-                      {/* Top Action Header */}
-                      <div className="flex items-start justify-between">
-                        <div className="flex items-center space-x-2">
-                          <div className="p-2 bg-indigo-50 text-indigo-500 border border-indigo-100 rounded-xl">
-                            {doc.fileType === 'image' ? <ImageIcon className="h-4 w-4" /> : <FileText className="h-4 w-4" />}
-                          </div>
-                          <div>
-                            <span className="font-extrabold text-[11px] text-slate-800 block truncate max-w-[120px]" title={doc.name}>
-                              {doc.name}
-                            </span>
-                            <span className="text-[8px] text-slate-450 text-slate-400 block truncate max-w-[120px]" title={doc.fileName}>
-                              {doc.fileName}
-                            </span>
-                          </div>
+          <div className="grid grid-cols-2 gap-6 text-xs font-bold text-slate-700 pt-2">
+            <div className="space-y-1">
+              <span className="text-slate-400 font-extrabold uppercase text-[9px]">Bank Name</span>
+              <p className="text-sm font-black text-slate-800">{profile.bankName || 'N/A'}</p>
+            </div>
+            <div className="space-y-1">
+              <span className="text-slate-400 font-extrabold uppercase text-[9px]">Bank Account Number</span>
+              <p className="text-sm font-black text-slate-800 font-mono">{profile.bankAccountNumber || 'N/A'}</p>
+            </div>
+            <div className="space-y-1">
+              <span className="text-slate-400 font-extrabold uppercase text-[9px]">Tax Identification Number</span>
+              <p className="text-sm font-black text-slate-800 font-mono">{profile.taxIdNumber || 'N/A'}</p>
+            </div>
+            <div className="space-y-1">
+              <span className="text-slate-400 font-extrabold uppercase text-[9px]">Social Security Number</span>
+              <p className="text-sm font-black text-slate-800 font-mono">{profile.socialSecurityNo || 'N/A'}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Right Column: Documents & Clearances Gallery */}
+        <div className="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm space-y-4 h-fit">
+          <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+            <div className="flex items-center space-x-2">
+              <CalendarRange className="h-4.5 w-4.5 text-indigo-500" />
+              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-700">Documents & Clearances</h4>
+              <span className="text-[10px] bg-slate-100 text-slate-500 font-extrabold px-1.5 py-0.5 rounded-md">
+                {documents.length}
+              </span>
+            </div>
+            
+            <button
+              onClick={() => setIsUploadOpen(true)}
+              className="inline-flex items-center space-x-1.5 bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold py-1.5 px-3 rounded-xl text-[10px] transition-colors cursor-pointer shadow-sm"
+            >
+              <Plus className="h-3.5 w-3.5" />
+              <span>Upload Clearance</span>
+            </button>
+          </div>
+
+          {/* Gallery Grid - Side-by-side clearances restored */}
+          {documents.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {documents.map((doc) => {
+                const status = getDocStatus(doc.expiryDate, doc.hasExpiry);
+                
+                return (
+                  <div 
+                    key={doc.id}
+                    className="border border-slate-100 rounded-2xl p-4 bg-slate-50/50 hover:bg-white hover:shadow-md transition-all flex flex-col justify-between space-y-3 relative group"
+                  >
+                    {/* Top Action Header */}
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-center space-x-2">
+                        <div className="p-2 bg-indigo-50 text-indigo-500 border border-indigo-100 rounded-xl">
+                          {doc.fileType === 'image' ? <ImageIcon className="h-4 w-4" /> : <FileText className="h-4 w-4" />}
                         </div>
-
-                        {/* Delete button (Visible on hover) */}
-                        <button
-                          onClick={() => handleDeleteDoc(doc.id, doc.name)}
-                          className="p-1 hover:bg-rose-50 text-slate-400 hover:text-rose-600 rounded-lg transition-colors cursor-pointer md:opacity-0 group-hover:opacity-100"
-                          title="Delete document"
-                        >
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </button>
-                      </div>
-
-                      {/* Expiration Details */}
-                      <div className="space-y-1.5 border-t border-slate-100 pt-2.5 text-[10px] font-bold">
-                        <div className="flex justify-between items-center">
-                          <span className="text-slate-400">EXPIRATION:</span>
-                          <span className="text-slate-600">{doc.hasExpiry ? doc.expiryDate : 'N/A'}</span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-slate-400">STATUS:</span>
-                          <span className={`px-2 py-0.5 rounded-full text-[8px] font-extrabold border ${status.color}`}>
-                            {status.label}
+                        <div>
+                          <span className="font-extrabold text-[11px] text-slate-800 block truncate max-w-[120px]" title={doc.name}>
+                            {doc.name}
+                          </span>
+                          <span className="text-[8px] text-slate-450 text-slate-450 block truncate max-w-[120px]" title={doc.fileName}>
+                            {doc.fileName}
                           </span>
                         </div>
                       </div>
 
-                      {/* Action buttons */}
-                      <div className="flex gap-2 pt-1">
-                        <button
-                          onClick={() => setViewingDoc(doc)}
-                          className="flex-1 inline-flex items-center justify-center space-x-1 border border-slate-200 hover:bg-slate-100 text-slate-600 font-extrabold py-1.5 px-2.5 rounded-lg text-[9px] transition-colors cursor-pointer"
-                        >
-                          <Eye className="h-3 w-3" />
-                          <span>View Scan</span>
-                        </button>
-                        
-                        <a
-                          href="#"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            alert(`Simulated file download for "${doc.fileName}"`);
-                          }}
-                          className="p-1.5 border border-slate-200 hover:bg-slate-100 text-slate-600 rounded-lg transition-colors cursor-pointer"
-                          title="Download document scan"
-                        >
-                          <ArrowDownToLine className="h-3 w-3" />
-                        </a>
-                      </div>
-
+                      {/* Delete button */}
+                      <button
+                        onClick={() => handleDeleteDoc(doc.id, doc.name)}
+                        className="p-1 hover:bg-rose-50 text-slate-400 hover:text-rose-600 rounded-lg transition-colors cursor-pointer md:opacity-0 group-hover:opacity-100"
+                        title="Delete document"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </button>
                     </div>
-                  );
-                })}
-              </div>
-            ) : (
-              <div className="border-2 border-dashed border-slate-200 rounded-2xl py-8 text-center text-slate-400 flex flex-col items-center justify-center space-y-2">
-                <FileText className="h-8 w-8 text-slate-350" />
-                <span className="text-[10px] font-bold">No documents uploaded. Click upload above to add NBI or Police Clearances.</span>
-              </div>
-            )}
 
-          </div>
+                    {/* Expiration Details */}
+                    <div className="space-y-1.5 border-t border-slate-100 pt-2.5 text-[10px] font-bold">
+                      <div className="flex justify-between items-center">
+                        <span className="text-slate-400">EXPIRATION:</span>
+                        <span className="text-slate-600">{doc.hasExpiry ? doc.expiryDate : 'N/A'}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-slate-400">STATUS:</span>
+                        <span className={`px-2 py-0.5 rounded-full text-[8px] font-extrabold border ${status.color}`}>
+                          {status.label}
+                        </span>
+                      </div>
+                    </div>
 
+                    {/* Action buttons */}
+                    <div className="flex gap-2 pt-1">
+                      <button
+                        onClick={() => setViewingDoc(doc)}
+                        className="flex-1 inline-flex items-center justify-center space-x-1 border border-slate-200 hover:bg-slate-100 text-slate-600 font-extrabold py-1.5 px-2.5 rounded-lg text-[9px] transition-colors cursor-pointer"
+                      >
+                        <Eye className="h-3 w-3" />
+                        <span>View Scan</span>
+                      </button>
+                      
+                      <a
+                        href="#"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          alert(`Simulated file download for "${doc.fileName}"`);
+                        }}
+                        className="p-1.5 border border-slate-200 hover:bg-slate-100 text-slate-600 rounded-lg transition-colors cursor-pointer"
+                        title="Download document scan"
+                      >
+                        <ArrowDownToLine className="h-3 w-3" />
+                      </a>
+                    </div>
+
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="border-2 border-dashed border-slate-200 rounded-2xl py-8 text-center text-slate-400 flex flex-col items-center justify-center space-y-2">
+              <FileText className="h-8 w-8 text-slate-350" />
+              <span className="text-[10px] font-bold">No documents uploaded. Click upload above to add NBI or Police Clearances.</span>
+            </div>
+          )}
         </div>
 
       </div>
