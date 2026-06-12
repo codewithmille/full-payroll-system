@@ -131,7 +131,7 @@ export default function StaffLeavesPage() {
       </div>
 
       {/* Leave Credit Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {balances.map((bal) => (
           <div key={bal.id} className="bg-white border border-slate-100 rounded-2xl p-4.5 shadow-sm relative overflow-hidden">
             <div className="absolute top-0 right-0 p-2 text-[8px] font-extrabold text-slate-400 bg-slate-50 border-l border-b border-slate-100 rounded-bl-xl uppercase tracking-widest">
