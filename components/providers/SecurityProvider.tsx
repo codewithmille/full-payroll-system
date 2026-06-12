@@ -4,6 +4,7 @@
 import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { Shield, ShieldAlert, ShieldCheck, Lock, RefreshCw, Cpu, ArrowRight } from 'lucide-react';
 import { useAuth } from '@/components/providers/AuthProvider';
+import { mockDb } from '@/lib/mockDb';
 
 export interface SecurityEvent {
   id: string;
@@ -228,11 +229,55 @@ export function SecurityProvider({ children }: { children: React.ReactNode }) {
       id: `sec-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
       timestamp: new Date().toISOString()
     };
+    
     setSecurityLogs(prev => {
       const updated = [newLog, ...prev].slice(0, 100); // cap at 100
       localStorage.setItem('hr_system_security_logs', JSON.stringify(updated));
       return updated;
     });
+
+    // AUTOMATED SECURITY THREAT-RESPONSE BACKUP (Google Drive Integration)
+    // If a threat of HIGH or CRITICAL severity is detected, immediately trigger an automated database snapshot to Google Drive!
+    if (event.severity === 'HIGH' || event.severity === 'CRITICAL') {
+      try {
+        console.log(`[SECURITY AUTOBACKUP] Threat detected (${event.type}). Auto-backing up to Google Drive...`);
+        const dataToBackup = mockDb.exportAllData();
+        const timestamp = Date.now();
+        const gdriveFilename = `gdrive_backup_${timestamp}_security_${event.type.toLowerCase()}.json`;
+        const sizeEstimate = JSON.stringify(dataToBackup).length;
+        
+        const gdriveFolderId = localStorage.getItem('hr_system_backup_gdrive_folder_id') || 'Secure Intrusion Vault';
+        
+        const newGdriveBackup = {
+          filename: gdriveFilename,
+          size: sizeEstimate,
+          createdAt: new Date().toISOString(),
+          type: 'security_autobackup',
+          tables: dataToBackup,
+          folderId: gdriveFolderId,
+          incidentType: event.type,
+          incidentDetails: event.details
+        };
+
+        const existingGdrive = localStorage.getItem('hr_system_gdrive_backups');
+        const list = existingGdrive ? JSON.parse(existingGdrive) : [];
+        list.unshift(newGdriveBackup);
+        localStorage.setItem('hr_system_gdrive_backups', JSON.stringify(list));
+        
+        // Write audit log to database
+        mockDb.addAuditLog(
+          user || { id: 'sys-0', name: 'SYSTEM SHIELD', email: 'waf@system.com', role: 'ADMIN' },
+          'AUTOMATED_SECURITY_BACKUP',
+          'Database',
+          `Intrusion Prevention: Detected threat (${event.type}) from IP ${event.ipAddress}. Triggered automatic database backup to Google Drive folder: "${gdriveFolderId}".`
+        );
+        
+        // Dispatch storage event to notify all active windows/tabs (e.g. Backups Page)
+        window.dispatchEvent(new Event('storage'));
+      } catch (err) {
+        console.error('[Security Auto-Backup Failed]', err);
+      }
+    }
   };
 
   const clearSecurityLogs = () => {
